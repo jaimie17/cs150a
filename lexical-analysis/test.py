@@ -1,24 +1,16 @@
-import longest_match
-import nfa2dfa
-import tokenizer
+from longest_match import longest_match
+from nfa2dfa import nfa2dfa
+from tokenizer import tokenizer
 
-# Test case 1: Basic input
-assert longest_match("abcdef", ["ab", "cd", "ef"]) == ["ab", "cd", "ef"]
+dfa1 = {'start':0,'final':{0},'edges':{(0,1,'a'),(1,0,'b'),(1,0,'c')}}
+# Test input with prefix match
+assert longest_match(dfa1, 'abcdef') == ('ab', 0)
 
-# Test case 2: Empty input
-assert longest_match("", ["ab", "cd", "ef"]) == []
+# Test empty input
+assert longest_match(dfa1, '') == ('', -1)
 
-# Test case 3: No matches
-assert longest_match("abcdef", ["xy", "zz"]) == []
-
-# Test case 4: Partial match
-assert longest_match("abcdef", ["ab", "cd", "efg"]) == ["ab", "cd"]
-
-# Test case 5: Multiple matches
-assert longest_match("ababab", ["ab"]) == ["ab", "ab", "ab"]
-
-# Test case 6: Case-insensitive match
-assert longest_match("ABCDEF", ["ab", "cd", "ef"], case_sensitive=False) == ["AB", "CD", "EF"]
+# Test no matches
+assert longest_match(dfa1, '1223') == ('', -1)
 
 # Test case 7: Basic input
 nfa = {
