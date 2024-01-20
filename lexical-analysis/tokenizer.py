@@ -19,9 +19,7 @@ def tokenizer(dfa, chars):
             chars = chars[len(string):]
     return tokens
 
-def main():
+if __name__ == "__main__":
         dfa1 = {'start':0,'final':{0},'edges':{(0,1,'a'),(1,0,'b'),(1,0,'c')}}
         tokens = tokenizer(dfa1,'ababac')
         print(tokens)
-
-main()

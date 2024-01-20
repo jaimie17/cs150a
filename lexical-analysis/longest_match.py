@@ -41,11 +41,9 @@ def longest_match(dfa,chars):
         else:
             state=state1
     return (chars,state)
-    
 
-def main():
+if __name__ == "__main__":
     '''represent a dfa by a dictionary giving the start state, final states, and a set of edges, then run longest_match on the dfa and a string'''
     dfa1 = {'start':0,'final':{0},'edges':{(0,1,'a'),(1,0,'b'),(1,0,'c')}}
     print(longest_match(dfa1,'abcdef'))
-
-main()
+    
