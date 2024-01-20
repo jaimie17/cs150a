@@ -5,7 +5,7 @@ If a prefix is accepted, it adds the prefix and the accepting state to the list 
 It continues this process until all characters have been tokenized.
 '''
 
-import longest_match
+from longest_match import longest_match
 
 def tokenizer(dfa, chars):
     tokens = []
@@ -18,3 +18,10 @@ def tokenizer(dfa, chars):
             tokens.append((string, state))
             chars = chars[len(string):]
     return tokens
+
+def main():
+        dfa1 = {'start':0,'final':{0},'edges':{(0,1,'a'),(1,0,'b'),(1,0,'c')}}
+        tokens = tokenizer(dfa1,'ababac')
+        print(tokens)
+
+main()

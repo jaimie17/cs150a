@@ -1,3 +1,5 @@
+'''Modifies the accepts function to longest_match function, which returns the longest prefix of chars accepted by the DFA'''
+
 def edge(dfa,state,c):
     ''' return the next state, or 'error' if there is no next state'''
     next_states = [e[1] for e in dfa['edges'] if e[0]==state and e[2]==c]

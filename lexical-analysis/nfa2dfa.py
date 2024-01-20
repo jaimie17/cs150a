@@ -1,4 +1,4 @@
-'''The nfa2dfa function is a placeholder for a function that would convert an NFA to a DFA using the subset construction algorithm. '''
+'''The nfa2dfa function is a placeholder for a function that would convert an NFA to a DFA. '''
 
 def nfa2dfa(nfa):
     dfa = {}  # DFA transitions
