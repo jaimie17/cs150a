@@ -1,11 +1,14 @@
 def edge(dfa,state,c):
     ''' return the next state, or 'error' if there is no next state'''
     next_states = [e[1] for e in dfa['edges'] if e[0]==state and e[2]==c]
-    if len(next_states)==1:
-        return next_states[0]
+    if len(next_states)== 0:
+        return 'error' #returns ‘error’ only when there are no valid transitions,
+    elif len(next_states) > 1:
+        #  if there are multiple transitions for the same character from the same state, it raises a ValueError
+        raise ValueError(f"Invalid DFA: multiple transitions for character '{c}' from state {state}")
     else:
-        return 'error'
-
+        return next_states[0]
+    
 def accepts(dfa,chars):
     ''' return True if the dfa accepts the string of chars '''
     state = dfa['start']
