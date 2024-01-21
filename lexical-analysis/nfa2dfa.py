@@ -54,9 +54,6 @@ def nfa2dfa(nfa):
     return dfa
 
 if __name__ == "__main__":
-    nfa1 = {'start': 0, 'final': {0, 2}, 'edges': {(0, 1, 'a'), (1, 0, 'b'), (1, 0, 'c'), (1, 2, 'b'), (2, 0, 'c')}}
-    nfa2 = {'start': 0, 'final': {0, 2},
-             'edges': {(0, 1, 'epsilon'), (1, 2, 'epsilon'), (1, 3, 'epsilon'), (2, 3, 'epsilon'),
-                       (1, 3, 'a'), (2, 2, 'a'), (3, 3, 'b'), (2, 3, 'c'), (3, 2, 'epsilon')}}
+    nfa1 = {'alphabet': {'a', 'b', 'c'}, 'start': 0, 'final': {0, 2}, 'edges': {(0, 1, 'a'), (1, 0, 'b'), (1, 0, 'c'), (1, 2, 'b'), (2, 0, 'c')}}
     dfa1 = nfa2dfa(nfa1)
     print(dfa1)

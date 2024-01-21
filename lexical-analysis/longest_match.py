@@ -56,4 +56,4 @@ if __name__ == "__main__":
     print("-------------------------------------")
     print(longest_match(dfa2, 'ababac'))  # Expected output: ('ababac', 0)
     print("-------------------------------------")
-    print(longest_match(dfa3, 'ababac'))  # Expected output: ('ababac', 0)
+    print(longest_match(dfa3, 'ababac'))  # Should raise a value error
