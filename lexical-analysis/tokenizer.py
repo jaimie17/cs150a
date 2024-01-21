@@ -21,5 +21,17 @@ def tokenizer(dfa, chars):
 
 if __name__ == "__main__":
         dfa1 = {'start':0,'final':{0},'edges':{(0,1,'a'),(1,0,'b'),(1,0,'c')}}
-        tokens = tokenizer(dfa1,'ababac')
-        print(tokens)
+        tokens_dfa1 = tokenizer(dfa1, 'abc')
+        print(tokens_dfa1) 
+        
+        print("-------------------------------------")
+        
+        dfa2 = {'start': 0, 'final': {0, 1}, 'edges': {(0, 1, 'a'), (1, 0, 'b'), (1, 0, 'c')}}
+        tokens_dfa2 = tokenizer(dfa2, 'cbaccabcbabbac')
+        print(tokens_dfa2) 
+
+        print("-------------------------------------")
+
+        dfa3 = {'start': 0, 'final': {0, 1}, 'edges': {(0, 1, 'a'), (1, 0, 'b'), (1, 0, 'c'), (0, 2, 'a'), (2, 0, 'b'), (2, 0, 'c')}}
+        tokens_dfa3 = tokenizer(dfa3, 'cbaccabcbabbac')
+        print(tokens_dfa3) # should give a ValueError: Invalid DFA: multiple transitions for character 'a' from state 0

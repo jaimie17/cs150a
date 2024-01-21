@@ -44,6 +44,16 @@ def longest_match(dfa,chars):
 
 if __name__ == "__main__":
     '''represent a dfa by a dictionary giving the start state, final states, and a set of edges, then run longest_match on the dfa and a string'''
-    dfa1 = {'start':0,'final':{0},'edges':{(0,1,'a'),(1,0,'b'),(1,0,'c')}}
-    print(longest_match(dfa1,'abcdef'))
-    
+    dfa1 = {'start': 0, 'final': {0}, 'edges': {(0, 1, 'a'), (1, 0, 'b'), (1, 0, 'c')}}
+    dfa2 = {'start': 0, 'final': {0, 1}, 'edges': {(0, 1, 'a'), (1, 0, 'b'), (1, 0, 'c')}}
+    dfa3 = {'start': 0, 'final': {0, 1}, 'edges': {(0, 1, 'a'), (1, 0, 'b'), (1, 0, 'c'), (0, 2, 'a'), (2, 0, 'b'), (2, 0, 'c')}}
+    # Test cases for longest_match function with different strings
+    print(longest_match(dfa1, 'abcdef'))  # Expected output: ('ab', 0)
+    print(longest_match(dfa1, ''))  # Expected output: ('', -1)
+    print(longest_match(dfa1, '1223'))  # Expected output: ('', -1)
+    print("-------------------------------------")
+    print(longest_match(dfa1, 'ababac'))  # Expected output: ('ababac', 0)
+    print("-------------------------------------")
+    print(longest_match(dfa2, 'ababac'))  # Expected output: ('ababac', 0)
+    print("-------------------------------------")
+    print(longest_match(dfa3, 'ababac'))  # Expected output: ('ababac', 0)
