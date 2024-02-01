@@ -1,0 +1,96 @@
+/*
+ * 
+ */
+
+options {
+  IGNORE_CASE = false;
+}
+
+PARSER_BEGIN(MiniJavaLex)
+
+import java.io.*;
+
+public class MiniJavaLex {
+
+  public static void main(String[] args) throws ParseException {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    Token temp_token = null;
+
+    SimpleCharStream stream = new SimpleCharStream(reader);
+    MiniJavaLexTokenManager TkMgr = new MiniJavaLexTokenManager(stream);
+
+    do {
+        temp_token = TkMgr.getNextToken();
+
+        switch(temp_token.kind) {
+
+         case LPAREN: System.out.println("LPAREN:    " + temp_token.image);
+           break;
+         case RPAREN: System.out.println("RPAREN:    " + temp_token.image);
+           break;
+         case ADD_OP: System.out.println("ADD_OP:    " + temp_token.image);
+           break;
+         case MINUS_OP: System.out.println("MINUS_OP:    " + temp_token.image);
+           break;
+         case MULT_OP: System.out.println("MULT_OP:   " + temp_token.image);
+           break;
+         case DIV_OP: System.out.println("DIV_OP:    " + temp_token.image);
+           break;
+         case NUMBER: System.out.println("NUMBER:    " + temp_token.image);
+           break;
+         default:
+           if ( temp_token.kind != EOF )
+             System.out.println("OTHER: " + temp_token.image);
+           break;
+        }
+    } while (temp_token.kind != EOF);
+  }
+}
+
+PARSER_END(MiniJavaLex)
+
+SKIP: /* Whitespace */
+{
+  "\t"
+| "\n"
+| "\r"
+| " "
+}
+
+TOKEN:
+{
+   <CLASS: "class" >
+|  <PUBLIC: "public" >
+|  <STATIC: "static" >
+|  <VOID: "void" >
+|  <NEW: "new" >
+|  <MAIN: "main" >
+|  <STRING: "String" >
+|  <EXTENDS: "extends" >
+|  <RETURN: "return" >
+|  <BOOLEAN: "boolean" >
+|  <INT: "int" >
+|  <ID: ["a"-"z","A"-"Z","_"] (["a"-"z","A"-"Z","_","0"-"9"])* >
+|  <IF: "if" >
+|  <WHILE: "while" >
+|  <PRINT: "System.out.print" >
+|  <STRING_LITERAL: "\"" (~["\r", "\n", "\""])* "\"" >
+|  <EQUAL: "=" >
+|  <LPAREN: "(" >
+|  <RPAREN: ")" >
+|  <LBRACKET: "[">
+|  <RBRACKET: "]" >
+|  <SEMICOLON: ";" >
+|  <ADD_OP: "+" >
+|  <MINUS_OP: "-" >
+|  <MULT_OP: "*" >
+|  <DIV_OP: "/" >
+|  <LENGTH: "length" >
+|  <DOT: "." >
+|  <NUMBER: (["0"-"9"])+ > 
+|  <TRUE: "true" >
+|  <FALSE: "false" >
+|  <THIS: "this" >
+|  <NOT: "!" >
+|  <COMMA: "," >
+}
