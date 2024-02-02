@@ -1,5 +1,7 @@
 /*
- * 
+ * Group Members: Samiyanur Islam and Jaimie Louie
+ * PA1
+ * Github Link: https://github.com/jaimie17/cs150a/blob/main/miniJavaLexer/miniJavaLex.jj
  */
 
 options {
