@@ -49,6 +49,8 @@ public class MiniJavaLex {
             break;
         case IF: System.out.println("IF: " + temp_token.image);
             break;
+        case ELSE: System.out.println("ELSE: " + temp_token.image);
+            break;
         case WHILE: System.out.println("WHILE: " + temp_token.image);
             break;
         case PRINT: System.out.println("PRINT: " + temp_token.image);
@@ -155,8 +157,8 @@ TOKEN:
 |  <RETURN: "return" >
 |  <BOOLEAN: "boolean" >
 |  <INT: "int" >
-|  <ID: ["a"-"z","A"-"Z","_"] (["a"-"z","A"-"Z","_","0"-"9"])* >
 |  <IF: "if" >
+|  <ELSE: "else" >
 |  <WHILE: "while" >
 |  <PRINT: "System.out.print" >
 |  <STRING_LITERAL: "\"" (~["\r", "\n", "\""])* "\"" >
@@ -194,4 +196,5 @@ TOKEN:
 |  <MINUS_EQUAL: "-=" >
 |  <MULT_EQUAL: "*=" >
 |  <DIV_EQUAL: "/=" >
+|  <ID: ["a"-"z","A"-"Z","_"] (["a"-"z","A"-"Z","_","0"-"9"])* >
 }
