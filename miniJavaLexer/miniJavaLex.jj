@@ -129,8 +129,6 @@ public class MiniJavaLex {
             break;
         case MULTI_LINE_COMMENT:System.out.println("MULTI_LINE_COMMENT: " + temp_token.image);
             break;
-        case COMMENT: System.out.println("COMMENT: " + temp_token.image);
-            break;
         case ERROR: System.out.println("ERROR: " + temp_token.image);
             break;
         default:
@@ -207,5 +205,5 @@ TOKEN:
 |  <ID: ["a"-"z","A"-"Z","_"] (["a"-"z","A"-"Z","_","0"-"9"])* >
 |  <SINGLE_LINE_COMMENT: "//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")? >
 |  <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/" >
-|  <ERROR: <~[]> >
+|  <ERROR: ~[] >
 }
