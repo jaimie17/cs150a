@@ -125,6 +125,10 @@ public class MiniJavaLex {
             break;
         case DIV_EQUAL: System.out.println("DIV_EQUAL: " + temp_token.image);
             break;
+        case SINGLE_LINE_COMMENT:System.out.println("SINGLE_LINE_COMMENT: " + temp_token.image);
+            break;
+        case MULTI_LINE_COMMENT:System.out.println("MULTI_LINE_COMMENT: " + temp_token.image);
+            break;
         case COMMENT: System.out.println("COMMENT: " + temp_token.image);
             break;
         case ERROR: System.out.println("ERROR: " + temp_token.image);
@@ -201,6 +205,7 @@ TOKEN:
 |  <MULT_EQUAL: "*=" >
 |  <DIV_EQUAL: "/=" >
 |  <ID: ["a"-"z","A"-"Z","_"] (["a"-"z","A"-"Z","_","0"-"9"])* >
-|  <COMMENT: "/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/" >
+|  <SINGLE_LINE_COMMENT: "//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")? >
+|  <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/" >
 |  <ERROR: <~[]> >
 }
