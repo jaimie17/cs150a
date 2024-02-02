@@ -24,20 +24,26 @@ public class MiniJavaLex {
 
         switch(temp_token.kind) {
 
-         case LPAREN: System.out.println("LPAREN:    " + temp_token.image);
+         case LPAREN: System.out.println("LPAREN: " + temp_token.image);
            break;
-         case RPAREN: System.out.println("RPAREN:    " + temp_token.image);
+         case RPAREN: System.out.println("RPAREN: " + temp_token.image);
            break;
-         case ADD_OP: System.out.println("ADD_OP:    " + temp_token.image);
+         case ADD_OP: System.out.println("ADD_OP: " + temp_token.image);
            break;
-         case MINUS_OP: System.out.println("MINUS_OP:    " + temp_token.image);
+         case MINUS_OP: System.out.println("MINUS_OP: " + temp_token.image);
            break;
-         case MULT_OP: System.out.println("MULT_OP:   " + temp_token.image);
+         case MULT_OP: System.out.println("MULT_OP: " + temp_token.image);
            break;
-         case DIV_OP: System.out.println("DIV_OP:    " + temp_token.image);
+         case DIV_OP: System.out.println("DIV_OP: " + temp_token.image);
            break;
-         case NUMBER: System.out.println("NUMBER:    " + temp_token.image);
+         case NUMBER: System.out.println("NUMBER: " + temp_token.image);
            break;
+         case CLASS: System.out.println("CLASS: " + temp_token.image);
+           break;
+         case PUBLIC: System.out.println("PUBLIC: " + temp_token.image);
+           break; 
+         case STATIC: System.out.println("STATIC: " + temp_token.image);
+           break;                                                            
          default:
            if ( temp_token.kind != EOF )
              System.out.println("OTHER: " + temp_token.image);
