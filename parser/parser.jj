@@ -20,6 +20,15 @@ public class MiniJavaLex {
 
     SimpleCharStream stream = new SimpleCharStream(reader);
     MiniJavaLexTokenManager TkMgr = new MiniJavaLexTokenManager(stream);
+    
+    // so it tells us whether its valid or not
+    MiniJavaParser parser = new MiniJavaParser(TkMgr);
+    try {
+        parser.Program();
+        System.out.println("Program is valid.");
+    } catch (ParseException e) {
+        System.out.println("Program is not valid: " + e.getMessage());
+    }
 
     do {
     temp_token = TkMgr.getNextToken();
