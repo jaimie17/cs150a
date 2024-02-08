@@ -1,7 +1,7 @@
 /*
  * Group Members: Samiyanur Islam and Jaimie Louie
  * PA2
- * Github Link:
+ * Github Link: https://github.com/jaimie17/cs150a/blob/main/parser/parser.jj
  */
 
 options {
@@ -208,4 +208,128 @@ TOKEN:
 |  <SINGLE_LINE_COMMENT: "//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")? >
 |  <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/" >
 |  <ERROR: ~[] >
+}
+
+/*
+ * Parser grammer rules
+ */
+void Program(): {}
+{
+    ( ClassDeclaration() )*
+}
+
+void ClassDeclaration(): {}
+{
+    "class" Identifier() ( "extends" Identifier() )? "{"
+        ( VarDeclaration() )*
+        ( MethodDeclaration() )*
+    "}"
+}
+
+void VarDeclaration(): {}
+{
+    Type() Identifier() ";"
+}
+
+void MethodDeclaration(): {}
+{
+    Type() Identifier() "(" ( Type() Identifier() ( "," Type() Identifier() )* )? ")" "{"
+        ( VarDeclaration() )*
+        ( Statement() )*
+    "}"
+}
+
+void Type(): {}
+{
+    "int"
+  | "boolean"
+  | "void"
+  | Identifier()
+}
+
+void Statement(): {}
+{
+      Block()
+  | IfStatement()
+  | WhileStatement()
+  | PrintStatement()
+  | AssignmentStatement()
+  | ArrayAssignmentStatement()
+}
+
+void Identifier(): {}
+{
+    <ID: ["a"-"z","A"-"Z","_"] (["a"-"z","A"-"Z","_","0"-"9"])* >
+}
+
+/* Arithmetic Expression Grammar */
+
+void Exp():
+{}
+{
+    Exp9()
+}
+
+void Exp9():
+{}
+{ 
+  Exp10() Exp9a()
+}
+
+void Exp9a():
+{}
+{
+  <ADD_OP> Exp10() { /* Build AST or process the operator here */ } Exp9a()
+  |
+  {}  
+}
+
+void Exp10():
+{}
+{ 
+  Exp11() Exp10a()
+}
+
+void Exp10a():
+{}
+{
+  <LT> Exp11() { /* Build AST or process the operator here */ } Exp10a()
+  |
+  {}  
+}
+
+void Exp11():
+{}
+{ 
+  Exp12() Exp11a()
+}
+
+void Exp11a():
+{}
+{
+  <MULT_OP> Exp12(){ /* Build AST or process the operator here */ } Exp11a()
+  |
+  {} 
+}
+
+void Exp12():
+{}
+{ 
+  Exp13() ( <AND> Exp13() { /* Build AST or process the operator here */ } )?
+}
+
+void Exp13():
+{}
+{
+  Exp16() ( <LBRACKET> Exp() <RBRACKET> { /* Build AST or process the operator here */ } | <DOT> <LENGTH> { /* Build AST or process the operator here */ } )?
+}
+
+void Exp16():
+{ Token t;}
+{
+  t=<NUMBER> { /* Build AST or process the token here */ }
+  |
+  t=<ID> { /* Build AST or process the token here */ }
+  |
+  <LPAREN> Exp() <RPAREN>
 }
