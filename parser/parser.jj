@@ -220,55 +220,86 @@ TOKEN:
 }
 
 /*
- * Parser grammer rules
+ * Parser grammar rules
  */
-void Program(): {}
+void Program(): 
+{}
 {
     ( ClassDeclaration() )*
 }
 
-void ClassDeclaration(): {}
+void ClassDeclaration(): 
+{}
 {
-    "class" Identifier() ( "extends" Identifier() )? "{"
+    <CLASS> <ID> ( <EXTENDS> <ID> )? <LBRACE>
         ( VarDeclaration() )*
         ( MethodDeclaration() )*
-    "}"
+    <RBRACE>
 }
 
-void VarDeclaration(): {}
+void VarDeclaration(): 
+{}
 {
-    Type() Identifier() ";"
+    Type() (<ID> | <TRUE> | <FALSE>) <SEMICOLON>
 }
 
-void MethodDeclaration(): {}
+void MethodDeclaration(): 
+{}
 {
-    Type() Identifier() "(" ( Type() Identifier() ( "," Type() Identifier() )* )? ")" "{"
+    <PUBLIC> Type() <ID> <LPAREN> ( Type() <ID> ( <COMMA> Type() <ID> )* )? <RPAREN> <LBRACE>
         ( VarDeclaration() )*
         ( Statement() )*
-    "}"
+        <RETURN> Exp() <SEMICOLON>
+    <RBRACE>
 }
 
-void Type(): {}
+void Type(): 
+{}
 {
-    "int"
-  | "boolean"
-  | "void"
-  | Identifier()
+    <INT>
+  | <BOOLEAN>
+  | <VOID>
+  | <ID>
 }
 
-void Statement(): {}
+void Statement(): 
+{}
 {
-      Block()
-  | IfStatement()
+    IfStatement()
   | WhileStatement()
   | PrintStatement()
   | AssignmentStatement()
   | ArrayAssignmentStatement()
 }
 
-void Identifier(): {}
+void IfStatement():
+{}
 {
-    <ID: ["a"-"z","A"-"Z","_"] (["a"-"z","A"-"Z","_","0"-"9"])* >
+    <IF> <LPAREN> Exp() <RPAREN> Statement() <ELSE> Statement()
+}
+
+void WhileStatement():
+{}
+{
+    <WHILE> <LPAREN> Exp() <RPAREN> Statement()
+}
+
+void PrintStatement():
+{}
+{
+    <PRINT> <LPAREN> Exp() <RPAREN> <SEMICOLON>
+}
+
+void AssignmentStatement():
+{}
+{
+    <ID> <EQUAL> Exp() <SEMICOLON>
+}
+
+void ArrayAssignmentStatement():
+{}
+{
+    <ID> <LBRACKET> Exp() <RBRACKET> <EQUAL> Exp() <SEMICOLON>
 }
 
 /* Arithmetic Expression Grammar */
@@ -290,6 +321,8 @@ void Exp9a():
 {
   <ADD_OP> Exp10() { /* Build AST or process the operator here */ } Exp9a()
   |
+  <MINUS_OP> Exp10() { /* Build AST or process the operator here */ } Exp9a()
+  |
   {}  
 }
 
@@ -302,7 +335,7 @@ void Exp10():
 void Exp10a():
 {}
 {
-  <LT> Exp11() { /* Build AST or process the operator here */ } Exp10a()
+  <LESS_THAN> Exp11() { /* Build AST or process the operator here */ } Exp10a()
   |
   {}  
 }
@@ -317,6 +350,8 @@ void Exp11a():
 {}
 {
   <MULT_OP> Exp12(){ /* Build AST or process the operator here */ } Exp11a()
+  |
+  <DIV_OP> Exp12(){ /* Build AST or process the operator here */ } Exp11a()
   |
   {} 
 }
@@ -342,3 +377,5 @@ void Exp16():
   |
   <LPAREN> Exp() <RPAREN>
 }
+
+// we need Exp .length, Exp .id ( ExpList ), this., new int [Exp], new id (), !Exp, (Exp) and probably more
