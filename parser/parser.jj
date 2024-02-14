@@ -126,16 +126,15 @@ void ClassDeclaration():
 void VarDeclaration(): 
 {}
 {
-    (Type() (<LBRACKET> <RBRACKET>)? | <ID>) <ID> <EQUAL> ( <NUMBER> | <LBRACKET> Exp() <RBRACKET> | <DOT> ( <LENGTH> | LOOKAHEAD(2) <ID> <LPAREN> ExpList() <RPAREN> | <ID> ) | <NEW> ( <INT> <LBRACKET> Exp() <RBRACKET> | <ID> <LPAREN> <RPAREN> ) )? <SEMICOLON>
+    Type() <ID> ( <EQUAL> Exp() )? <SEMICOLON>
 }
 
 void MethodDeclaration(): 
 {}
 {
     <PUBLIC> ( <STATIC> )? Type() ( <ID> | <MAIN> ) <LPAREN> ( Type() (<LBRACKET> <RBRACKET>)? <ID> ( <COMMA> Type() <ID> )* )? <RPAREN> <LBRACE>
-        (LOOKAHEAD(2) VarDeclaration() )*
         ( Statement() )*
-        <RETURN> Exp() <SEMICOLON>
+        ( <RETURN> Exp() <SEMICOLON> )?
     <RBRACE>
 }
 
@@ -151,10 +150,13 @@ void Type():
 void Statement(): 
 {}
 {
-    IfStatement()
+  IfStatement()
   | WhileStatement()
   | PrintStatement()
-  | AssignmentStatement()
+  | LOOKAHEAD(2) AssignmentStatement()
+  | LOOKAHEAD(2) VarDeclaration()
+  | ClassInstantiation()
+  | ArrayDeclaration()
 }
 
 void IfStatement():
@@ -184,12 +186,22 @@ void AssignmentStatement():
 void AssignmentStatementA():
 {}
 {
-   <LBRACKET> Exp() <RBRACKET> <EQUAL> Exp() <SEMICOLON>
+    <LBRACKET> Exp() <RBRACKET> <EQUAL> Exp() <SEMICOLON>
     |
     <EQUAL> Exp() <SEMICOLON>
 }
 
-/* Arithmetic Expression Grammar */
+void ClassInstantiation():
+{}
+{
+    <ID> <ID> <EQUAL> <NEW> <ID> <LPAREN> <RPAREN> <SEMICOLON>
+}
+
+void ArrayDeclaration():
+{}
+{
+    Type() <LBRACKET> <RBRACKET> <ID> <EQUAL> <NEW> Type() <LBRACKET> Exp() <RBRACKET> <SEMICOLON>
+}
 
 void Exp():
 {}
@@ -222,7 +234,7 @@ void Exp10():
 void Exp10a():
 {}
 {
-  <LESS_THAN> Exp11()  Exp10a()
+   ( <LESS_THAN> | <GREATER_THAN> ) Exp11() Exp10a()
   |
   {}  
 }
@@ -246,7 +258,15 @@ void Exp11a():
 void Exp12():
 {}
 { 
-  Exp13() ( <AND> Exp13() )?
+  Exp13() Exp12a()
+}
+
+void Exp12a():
+{}
+{
+  <AND> Exp13() Exp12a()
+  |
+  {} 
 }
 
 void Exp13():
