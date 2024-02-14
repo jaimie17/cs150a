@@ -64,7 +64,7 @@ TOKEN:
 |  <IF: "if" >
 |  <ELSE: "else" >
 |  <WHILE: "while" >
-|  <PRINT: "System.out.print" >
+|  <PRINT: "System.out.println" >
 |  <STRING_LITERAL: "\"" (~["\r", "\n", "\""])* "\"" >
 |  <EQUAL: "=" >
 |  <LPAREN: "(" >
@@ -155,8 +155,9 @@ void Statement():
   | PrintStatement()
   | LOOKAHEAD(2) AssignmentStatement()
   | LOOKAHEAD(2) VarDeclaration()
-  | ClassInstantiation()
+  | LOOKAHEAD(2) ClassInstantiation()
   | ArrayDeclaration()
+  | MethodCall()
 }
 
 void IfStatement():
@@ -174,13 +175,15 @@ void WhileStatement():
 void PrintStatement():
 {}
 {
-    <PRINT> <LPAREN> Exp() <RPAREN> <SEMICOLON>
+    <PRINT> <LPAREN> <STRING_LITERAL> <RPAREN> <SEMICOLON>
 }
 
 void AssignmentStatement():
 {}
 {
     <ID> AssignmentStatementA()
+    |
+    <THIS> <DOT> <ID> <EQUAL> Exp16() <SEMICOLON>
 }
 
 void AssignmentStatementA():
@@ -201,6 +204,12 @@ void ArrayDeclaration():
 {}
 {
     Type() <LBRACKET> <RBRACKET> <ID> <EQUAL> <NEW> Type() <LBRACKET> Exp() <RBRACKET> <SEMICOLON>
+}
+
+void MethodCall():
+{}
+{
+    <ID> <DOT> <ID> <LPAREN> ( ExpList() )? <RPAREN> <SEMICOLON>
 }
 
 void Exp():
@@ -285,6 +294,10 @@ void Exp16():
   t=<TRUE>
   |
   t=<FALSE>
+  |
+  <NOT> Exp16()
+  |
+  <THIS> <DOT> <ID>
   |
   <LPAREN> Exp() <RPAREN>
 }
