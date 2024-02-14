@@ -14,14 +14,8 @@ import java.io.*;
 
 public class MiniJavaParser {
 
-  public static void main(String[] args) throws ParseException, IOException {
-    StringBuilder input = new StringBuilder();
+  public static void main(String[] args) throws ParseException {
     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-    
-    String line;
-    while ((line = reader.readLine()) != null) {
-        input.append(line).append('\n');
-    }
 
     SimpleCharStream stream = new SimpleCharStream(reader);
     MiniJavaParserTokenManager TkMgr = new MiniJavaParserTokenManager(stream);
@@ -132,14 +126,14 @@ void ClassDeclaration():
 void VarDeclaration(): 
 {}
 {
-    Type() <ID> <SEMICOLON>
+    (Type() (<LBRACKET> <RBRACKET>)? | <ID>) <ID> <EQUAL> ( <NUMBER> | <LBRACKET> Exp() <RBRACKET> | <DOT> ( <LENGTH> | LOOKAHEAD(2) <ID> <LPAREN> ExpList() <RPAREN> | <ID> ) | <NEW> ( <INT> <LBRACKET> Exp() <RBRACKET> | <ID> <LPAREN> <RPAREN> ) )? <SEMICOLON>
 }
 
 void MethodDeclaration(): 
 {}
 {
-    <PUBLIC> ( <STATIC> )? Type() <ID> <LPAREN> ( Type() <ID> ( <COMMA> Type() <ID> )* )? <RPAREN> <LBRACE>
-        ( VarDeclaration() )*
+    <PUBLIC> ( <STATIC> )? Type() ( <ID> | <MAIN> ) <LPAREN> ( Type() (<LBRACKET> <RBRACKET>)? <ID> ( <COMMA> Type() <ID> )* )? <RPAREN> <LBRACE>
+        (LOOKAHEAD(2) VarDeclaration() )*
         ( Statement() )*
         <RETURN> Exp() <SEMICOLON>
     <RBRACE>
@@ -151,6 +145,7 @@ void Type():
     <INT>
   | <BOOLEAN>
   | <VOID>
+  | <STRING>
 }
 
 void Statement(): 
@@ -165,13 +160,13 @@ void Statement():
 void IfStatement():
 {}
 {
-    <IF> <LPAREN> Exp() <RPAREN> Statement() <ELSE> Statement()
+    <IF> <LPAREN> Exp() <RPAREN> <LBRACE> ( Statement() )* <RBRACE> ( <ELSE> <LBRACE> ( Statement() )* <RBRACE> )?
 }
 
 void WhileStatement():
 {}
 {
-    <WHILE> <LPAREN> Exp() <RPAREN> Statement()
+    <WHILE> <LPAREN> Exp() <RPAREN> <LBRACE> ( Statement() )* <RBRACE>
 }
 
 void PrintStatement():
