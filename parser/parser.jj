@@ -2,7 +2,6 @@
  * Group Members: Samiyanur Islam and Jaimie Louie
  * PA2
  * Github Link: https://github.com/jaimie17/cs150a/blob/main/parser/parser.jj
- * we need Exp .length, Exp .id ( ExpList ), this., new int [Exp], new id (), !Exp, (Exp) and probably more
  */
 
 options {
@@ -105,7 +104,6 @@ TOKEN:
 |  <ID: ["a"-"z","A"-"Z","_"] (["a"-"z","A"-"Z","_","0"-"9"])* >
 |  <SINGLE_LINE_COMMENT: "//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")? >
 |  <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/" >
-|  <ERROR: ~[] >
 }
 
 /*
@@ -129,7 +127,7 @@ void ClassDeclaration():
 void VarDeclaration(): 
 {}
 {
-    Type() (<ID> | <TRUE> | <FALSE>) <SEMICOLON>
+    Type() <ID> <SEMICOLON>
 }
 
 void MethodDeclaration(): 
@@ -208,9 +206,9 @@ void Exp9():
 void Exp9a():
 {}
 {
-  <ADD_OP> Exp10() { /* Build AST or process the operator here */ } Exp9a()
+  <ADD_OP> Exp10()  Exp9a()
   |
-  <MINUS_OP> Exp10() { /* Build AST or process the operator here */ } Exp9a()
+  <MINUS_OP> Exp10()  Exp9a()
   |
   {}  
 }
@@ -224,7 +222,7 @@ void Exp10():
 void Exp10a():
 {}
 {
-  <LESS_THAN> Exp11() { /* Build AST or process the operator here */ } Exp10a()
+  <LESS_THAN> Exp11()  Exp10a()
   |
   {}  
 }
@@ -238,9 +236,9 @@ void Exp11():
 void Exp11a():
 {}
 {
-  <MULT_OP> Exp12(){ /* Build AST or process the operator here */ } Exp11a()
+  <MULT_OP> Exp12() Exp11a()
   |
-  <DIV_OP> Exp12(){ /* Build AST or process the operator here */ } Exp11a()
+  <DIV_OP> Exp12() Exp11a()
   |
   {} 
 }
@@ -248,21 +246,31 @@ void Exp11a():
 void Exp12():
 {}
 { 
-  Exp13() ( <AND> Exp13() { /* Build AST or process the operator here */ } )?
+  Exp13() ( <AND> Exp13() )?
 }
 
 void Exp13():
 {}
 {
-  Exp16() ( <LBRACKET> Exp() <RBRACKET> { /* Build AST or process the operator here */ } | <DOT> <LENGTH> { /* Build AST or process the operator here */ } )?
+    Exp16() ( <LBRACKET> Exp() <RBRACKET> | <DOT> ( <LENGTH> | LOOKAHEAD(2) <ID> <LPAREN> ExpList() <RPAREN> | <ID> ) | <NEW> ( <INT> <LBRACKET> Exp() <RBRACKET> | <ID> <LPAREN> <RPAREN> ) )?
 }
 
 void Exp16():
 { Token t;}
 {
-  t=<NUMBER> { /* Build AST or process the token here */ }
+  t=<NUMBER> 
   |
-  t=<ID> { /* Build AST or process the token here */ }
+  t=<ID> 
+  |
+  t=<TRUE>
+  |
+  t=<FALSE>
   |
   <LPAREN> Exp() <RPAREN>
+}
+
+void ExpList():
+{}
+{
+    Exp() ( <COMMA> Exp() )*
 }
