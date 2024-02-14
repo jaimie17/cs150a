@@ -14,9 +14,14 @@ import java.io.*;
 
 public class MiniJavaParser {
 
-  public static void main(String[] args) throws ParseException {
+  public static void main(String[] args) throws ParseException, IOException {
+    StringBuilder input = new StringBuilder();
     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-    Token temp_token = null;
+    
+    String line;
+    while ((line = reader.readLine()) != null) {
+        input.append(line).append('\n');
+    }
 
     SimpleCharStream stream = new SimpleCharStream(reader);
     MiniJavaParserTokenManager TkMgr = new MiniJavaParserTokenManager(stream);
@@ -133,7 +138,7 @@ void VarDeclaration():
 void MethodDeclaration(): 
 {}
 {
-    <PUBLIC> Type() <ID> <LPAREN> ( Type() <ID> ( <COMMA> Type() <ID> )* )? <RPAREN> <LBRACE>
+    <PUBLIC> ( <STATIC> )? Type() <ID> <LPAREN> ( Type() <ID> ( <COMMA> Type() <ID> )* )? <RPAREN> <LBRACE>
         ( VarDeclaration() )*
         ( Statement() )*
         <RETURN> Exp() <SEMICOLON>
