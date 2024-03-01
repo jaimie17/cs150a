@@ -64,7 +64,7 @@ void Start(int indent):
   |  <IF: "if" >
   |  <ELSE: "else" >
   |  <WHILE: "while" >
-  |  <PRINT: "System.out.println" >
+  |  <PRINTLN: "System.out.println" >
   |  <STRING_LITERAL: "\"" (~["\r", "\n", "\""])* "\"" >
   |  <EQUAL: "=" >
   |  <LPAREN: "(" >
@@ -84,8 +84,8 @@ void Start(int indent):
   |  <THIS: "this" >
   |  <NOT: "!" >
   |  <COMMA: "," >
-  |  <LBRACE: "{" >
-  |  <RBRACE: "}" >
+  |  <LCURLY: "{" >
+  |  <RCURLY: "}" >
   |  <LESS_THAN: "<" >
   |  <GREATER_THAN: ">" >
   |  <EQUALS: "==" >
@@ -125,7 +125,7 @@ void MainClass(int indent):
       {System.out.println("\n  }\n}\n"); }
 }
   
-void Statement(int indent):
+void Statements(int indent):
 {Token t;}
 { 
   <LCURLY> 
