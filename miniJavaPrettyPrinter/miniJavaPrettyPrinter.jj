@@ -1,0 +1,323 @@
+/*
+ * Group Members: Samiyanur Islam and Jaimie Louie
+ * PA3
+ * Github Link: 
+ */
+
+ options {
+    IGNORE_CASE = false;
+  }
+  
+  PARSER_BEGIN(MiniJavaPrettyPrinter)
+  
+  import java.io.*;
+  
+  public class MiniJavaPrettyPrinter {
+  
+    public static void main(String[] args) throws ParseException {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+  
+      SimpleCharStream stream = new SimpleCharStream(reader);
+      MiniJavaParserTokenManager TkMgr = new MiniJavaParserTokenManager(stream);
+      
+      // Tells us whether the program is valid or not
+      MiniJavaParser parser = new MiniJavaParser(TkMgr);
+      boolean valid = false;
+      try {
+          parser.Program();
+          valid = true;
+      } catch (ParseException e) {
+          System.out.println("Program is not valid: " + e.getMessage());
+      }
+  
+      if (valid) {
+          System.out.println("Program is valid.");
+      } else {
+          System.out.println("Program is not valid.");
+  }
+    }
+  }
+  
+  PARSER_END(MiniJavaPrettyPrinter)
+  
+  SKIP: /* Whitespace */
+  {
+    "\t"
+  | "\n"
+  | "\r"
+  | " "
+  }
+  
+  TOKEN:
+  {
+     <CLASS: "class" >
+  |  <PUBLIC: "public" >
+  |  <STATIC: "static" >
+  |  <VOID: "void" >
+  |  <NEW: "new" >
+  |  <MAIN: "main" >
+  |  <STRING: "String" >
+  |  <EXTENDS: "extends" >
+  |  <RETURN: "return" >
+  |  <BOOLEAN: "boolean" >
+  |  <INT: "int" >
+  |  <IF: "if" >
+  |  <ELSE: "else" >
+  |  <WHILE: "while" >
+  |  <PRINT: "System.out.println" >
+  |  <STRING_LITERAL: "\"" (~["\r", "\n", "\""])* "\"" >
+  |  <EQUAL: "=" >
+  |  <LPAREN: "(" >
+  |  <RPAREN: ")" >
+  |  <LBRACKET: "[">
+  |  <RBRACKET: "]" >
+  |  <SEMICOLON: ";" >
+  |  <ADD_OP: "+" >
+  |  <MINUS_OP: "-" >
+  |  <MULT_OP: "*" >
+  |  <DIV_OP: "/" >
+  |  <LENGTH: "length" >
+  |  <DOT: "." >
+  |  <NUMBER: (["0"-"9"])+ > 
+  |  <TRUE: "true" >
+  |  <FALSE: "false" >
+  |  <THIS: "this" >
+  |  <NOT: "!" >
+  |  <COMMA: "," >
+  |  <LBRACE: "{" >
+  |  <RBRACE: "}" >
+  |  <LESS_THAN: "<" >
+  |  <GREATER_THAN: ">" >
+  |  <EQUALS: "==" >
+  |  <NOT_EQUALS: "!=" >
+  |  <AND: "&&" >
+  |  <OR: "||" >
+  |  <LESS_THAN_OR_EQUAL: "<=" >
+  |  <GREATER_THAN_OR_EQUAL: ">=" >
+  |  <INCREMENT: "++" >
+  |  <DECREMENT: "--" >
+  |  <PLUS_EQUAL: "+=" >
+  |  <MINUS_EQUAL: "-=" >
+  |  <MULT_EQUAL: "*=" >
+  |  <DIV_EQUAL: "/=" >
+  |  <ID: ["a"-"z","A"-"Z","_"] (["a"-"z","A"-"Z","_","0"-"9"])* >
+  |  <SINGLE_LINE_COMMENT: "//" (~["\n", "\r"])* ("\n" | "\r" | "\r\n")? >
+  |  <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/" >
+  }
+  
+  /*
+   * Parser grammar rules
+   */
+  void Program(): 
+  {}
+  {
+      ( ClassDeclaration() )*
+  }
+  
+  void ClassDeclaration(): 
+  {}
+  {
+      <CLASS> <ID> ( <EXTENDS> <ID> )? <LBRACE>
+          ( VarDeclaration() )*
+          ( MethodDeclaration() )*
+      <RBRACE>
+  }
+  
+  void VarDeclaration(): 
+  {}
+  {
+      ( Type() | <ID> ) ( <LBRACKET> <RBRACKET> )? <ID> ( <EQUAL> Exp() )? <SEMICOLON>
+  }
+  
+  void MethodDeclaration(): 
+  {}
+  {
+      <PUBLIC> ( <STATIC> )? Type() ( <ID> | <MAIN> ) <LPAREN> ( Type() (<LBRACKET> <RBRACKET>)? <ID> ( <COMMA> Type() <ID> )* )? <RPAREN> <LBRACE>
+          ( Statement() )*
+          ( <RETURN> Exp() <SEMICOLON> )?
+      <RBRACE>
+  }
+  
+  void Type(): 
+  {}
+  {
+      <INT>
+    | <BOOLEAN>
+    | <VOID>
+    | <STRING>
+  }
+  
+  void Statement(): 
+  {}
+  {
+    IfStatement()
+    | WhileStatement()
+    | PrintStatement()
+    | LOOKAHEAD(4) VarDeclaration()
+    | LOOKAHEAD(4) AssignmentStatement()
+    | LOOKAHEAD(4) ClassInstantiation()
+    | ArrayDeclaration()
+    | MethodCall()
+  }
+  
+  void IfStatement():
+  {}
+  {
+      <IF> <LPAREN> Exp() <RPAREN> <LBRACE> ( Statement() )* <RBRACE> ( <ELSE> <LBRACE> ( Statement() )* <RBRACE> )?
+  }
+  
+  void WhileStatement():
+  {}
+  {
+      <WHILE> <LPAREN> Exp() <RPAREN> <LBRACE> ( Statement() )* <RBRACE>
+  }
+  
+  void PrintStatement():
+  {}
+  {
+      <PRINT> <LPAREN> ( <STRING_LITERAL> | Exp()) <RPAREN> <SEMICOLON>
+  }
+  
+  void AssignmentStatement():
+  {}
+  {
+      <ID> AssignmentStatementA()
+      |
+      <THIS> <DOT> <ID> <EQUAL> Exp16() <SEMICOLON>
+  }
+  
+  void AssignmentStatementA():
+  {}
+  {
+      <LBRACKET> Exp() <RBRACKET> <EQUAL> Exp() <SEMICOLON>
+      |
+      <EQUAL> Exp() <SEMICOLON>
+  }
+  
+  void ClassInstantiation():
+  {}
+  {
+      <ID> <ID> <EQUAL> <NEW> <ID> <LPAREN> <RPAREN> <SEMICOLON>
+  }
+  
+  void ArrayDeclaration():
+  {}
+  {
+      Type() <LBRACKET> <RBRACKET> <ID> <EQUAL> <NEW> Type() <LBRACKET> Exp() <RBRACKET> <SEMICOLON>
+  }
+  
+  void MethodCall():
+  {}
+  {
+      <ID> <DOT> <ID> <LPAREN> ( ExpList() )? <RPAREN> <SEMICOLON>
+  }
+  
+  void Exp():
+  {}
+  {
+      Exp9()
+  }
+  
+  void Exp9():
+  {}
+  { 
+    Exp10() Exp9a()
+  }
+  
+  void Exp9a():
+  {}
+  {
+    <AND> Exp10() Exp9a()
+    |
+    {}  
+  }
+  
+  void Exp10():
+  {}
+  { 
+    Exp11() Exp10a()
+  }
+  
+  void Exp10a():
+  {}
+  {
+     ( <LESS_THAN> | <GREATER_THAN> ) Exp11() Exp10a()
+    |
+    {}  
+  }
+  
+  void Exp11():
+  {}
+  { 
+    Exp12() Exp11a()
+  }
+  
+  void Exp11a():
+  {}
+  {
+    <ADD_OP> Exp12() Exp11a()
+    |
+    <MINUS_OP> Exp12() Exp11a()
+    |
+    {} 
+  }
+  
+  void Exp12():
+  {}
+  { 
+    Exp13() Exp12a()
+  }
+  
+  void Exp12a():
+  {}
+  {
+    <MULT_OP> Exp13() Exp12a()
+    |
+    <DIV_OP> Exp13() Exp12a()
+    |
+    {} 
+  }
+  
+  void Exp13():
+  {}
+  {
+      Exp16() ( Exp13a() )?
+  }
+  
+  void Exp13a():
+  {}
+  {
+      <LBRACKET> Exp() <RBRACKET>
+      |
+      <DOT> ( <LENGTH> | LOOKAHEAD(2) <ID> <LPAREN> ExpList() <RPAREN> | <ID> )
+      |
+      <NEW> ( <INT> <LBRACKET> Exp() <RBRACKET> | <ID> <LPAREN> <RPAREN> )
+  }
+  
+  void Exp16():
+  { Token t;}
+  {
+    <LPAREN> Exp() <RPAREN>
+    |
+    t=<NUMBER> 
+    |
+    t=<ID> 
+    |
+    t=<TRUE>
+    |
+    t=<FALSE>
+    |
+    <NOT> Exp16()
+    |
+    <THIS> <DOT> <ID>
+    | LOOKAHEAD(2)
+    <NEW> Type() <LBRACKET> Exp() <RBRACKET>
+    |
+    <NEW> <ID> <LPAREN> ( ExpList() )? <RPAREN>
+  }
+  
+  void ExpList():
+  {}
+  {
+      Exp() ( <COMMA> Exp() )*
+  }
