@@ -16,7 +16,7 @@
   
     public static void main(String args[]) {
         System.out.println("Reading from standard input...");
-        MiniJavaPP t = new MiniJavaPrettyPrinter(System.in);
+        MiniJavaPrettyPrinter t = new MiniJavaPrettyPrinter(System.in);
         try {
             t.Start(0);
             System.out.println("Thank you.");
