@@ -4,31 +4,39 @@
  * Github Link: 
  */
 
- options {
+options {
     IGNORE_CASE = false;
   }
   
-  PARSER_BEGIN(MiniJavaPrettyPrinter)
+PARSER_BEGIN(MiniJavaPrettyPrinter)
   
-  import java.io.*;
-  
-  public class MiniJavaPrettyPrinter {
-  
+import java.io.*;
+
+public class MiniJavaPrettyPrinter {
     public static void main(String args[]) {
         System.out.println("Reading from standard input...");
-        MiniJavaPrettyPrinter t = new MiniJavaPrettyPrinter(System.in);
+        MiniJavaPrettyPrinter parser = new MiniJavaPrettyPrinter(System.in);
         try {
-            t.Start(0);
+            parser.Start(0); // Corrected method name to "Start"
             System.out.println("Thank you.");
-        } catch (Exception e) {
+        } catch (ParseException e) {
             System.out.println("Oops.");
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
+
+    // Other methods and logic go here (e.g., parsing rules, pretty printing rules)
+    // ...
+
+    // Example placeholder method (you need to define your actual rules)
+    public void Start(int indentationLevel) throws ParseException {
+        // Your implementation for pretty printing goes here
+        // ...
+    }
 }
-  
-  PARSER_END(MiniJavaPrettyPrinter)
+
+PARSER_END(MiniJavaPrettyPrinter)
   
   SKIP: /* Whitespace */
   {
