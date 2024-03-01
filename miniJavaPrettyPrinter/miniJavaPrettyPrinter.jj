@@ -101,39 +101,47 @@ void Start(int indent):
   }
   
   /*
-   * Parser grammar rules
+   * Grammar rules and pretty printing
    */
   void Program(int indent): 
   {}
   {
-      ( ClassDeclaration() )*
+      ( ClassDeclaration(indent) )*
   }
   
-  void ClassDeclaration(): 
+  void ClassDeclaration(int indent): 
   {}
   {
       <CLASS> <ID> ( <EXTENDS> <ID> )? <LBRACE>
-          ( VarDeclaration() )*
-          ( MethodDeclaration() )*
+      { 
+        for (int i = 0; i < indent; i++) System.out.print("    ");
+        System.out.println("class " + token.image + " {"); 
+     }
+     ( VarDeclaration(indent + 1) )*
+     ( MethodDeclaration(indent + 1) )*
+     <RBRACE>
+    { 
+        for (int i = 0; i < indent; i++) System.out.print("    ");
+        System.out.println("}"); 
+    }
+  }
+  
+  void VarDeclaration(int indent): 
+  {}
+  {
+      ( Type(indent) | <ID> ) ( <LBRACKET> <RBRACKET> )? <ID> ( <EQUAL> Exp(indent) )? <SEMICOLON>
+  }
+  
+  void MethodDeclaration(int indent): 
+  {}
+  {
+      <PUBLIC> ( <STATIC> )? Type(indent) ( <ID> | <MAIN> ) <LPAREN> ( Type(indent) (<LBRACKET> <RBRACKET>)? <ID> ( <COMMA> Type(indent) <ID> )* )? <RPAREN> <LBRACE>
+          ( Statement(indent) )*
+          ( <RETURN> Exp(indent) <SEMICOLON> )?
       <RBRACE>
   }
   
-  void VarDeclaration(): 
-  {}
-  {
-      ( Type() | <ID> ) ( <LBRACKET> <RBRACKET> )? <ID> ( <EQUAL> Exp() )? <SEMICOLON>
-  }
-  
-  void MethodDeclaration(): 
-  {}
-  {
-      <PUBLIC> ( <STATIC> )? Type() ( <ID> | <MAIN> ) <LPAREN> ( Type() (<LBRACKET> <RBRACKET>)? <ID> ( <COMMA> Type() <ID> )* )? <RPAREN> <LBRACE>
-          ( Statement() )*
-          ( <RETURN> Exp() <SEMICOLON> )?
-      <RBRACE>
-  }
-  
-  void Type(): 
+  void Type(int indent): 
   {}
   {
       <INT>
@@ -142,157 +150,157 @@ void Start(int indent):
     | <STRING>
   }
   
-  void Statement(): 
+  void Statement(int indent): 
   {}
   {
-    IfStatement()
-    | WhileStatement()
-    | PrintStatement()
-    | LOOKAHEAD(4) VarDeclaration()
-    | LOOKAHEAD(4) AssignmentStatement()
-    | LOOKAHEAD(4) ClassInstantiation()
-    | ArrayDeclaration()
-    | MethodCall()
+    IfStatement(indent)
+    | WhileStatement(indent)
+    | PrintStatement(indent)
+    | LOOKAHEAD(4) VarDeclaration(indent)
+    | LOOKAHEAD(4) AssignmentStatement(indent)
+    | LOOKAHEAD(4) ClassInstantiation(indent)
+    | ArrayDeclaration(indent)
+    | MethodCall(indent)
   }
   
-  void IfStatement():
+  void IfStatement(int indent):
   {}
   {
-      <IF> <LPAREN> Exp() <RPAREN> <LBRACE> ( Statement() )* <RBRACE> ( <ELSE> <LBRACE> ( Statement() )* <RBRACE> )?
+      <IF> <LPAREN> Exp(indent) <RPAREN> <LBRACE> ( Statement(indent) )* <RBRACE> ( <ELSE> <LBRACE> ( Statement(indent) )* <RBRACE> )?
   }
   
-  void WhileStatement():
+  void WhileStatement(int indent):
   {}
   {
-      <WHILE> <LPAREN> Exp() <RPAREN> <LBRACE> ( Statement() )* <RBRACE>
+      <WHILE> <LPAREN> Exp(indent) <RPAREN> <LBRACE> ( Statement(indent) )* <RBRACE>
   }
   
-  void PrintStatement():
+  void PrintStatement(int indent):
   {}
   {
-      <PRINT> <LPAREN> ( <STRING_LITERAL> | Exp()) <RPAREN> <SEMICOLON>
+      <PRINT> <LPAREN> ( <STRING_LITERAL> | Exp(indent)) <RPAREN> <SEMICOLON>
   }
   
-  void AssignmentStatement():
+  void AssignmentStatement(int indent):
   {}
   {
-      <ID> AssignmentStatementA()
+      <ID> AssignmentStatementA(indent)
       |
-      <THIS> <DOT> <ID> <EQUAL> Exp16() <SEMICOLON>
+      <THIS> <DOT> <ID> <EQUAL> Exp16(indent) <SEMICOLON>
   }
   
-  void AssignmentStatementA():
+  void AssignmentStatementA(int indent):
   {}
   {
-      <LBRACKET> Exp() <RBRACKET> <EQUAL> Exp() <SEMICOLON>
+      <LBRACKET> Exp(indent) <RBRACKET> <EQUAL> Exp(indent) <SEMICOLON>
       |
-      <EQUAL> Exp() <SEMICOLON>
+      <EQUAL> Exp(indent) <SEMICOLON>
   }
   
-  void ClassInstantiation():
+  void ClassInstantiation(int indent):
   {}
   {
       <ID> <ID> <EQUAL> <NEW> <ID> <LPAREN> <RPAREN> <SEMICOLON>
   }
   
-  void ArrayDeclaration():
+  void ArrayDeclaration(int indent):
   {}
   {
-      Type() <LBRACKET> <RBRACKET> <ID> <EQUAL> <NEW> Type() <LBRACKET> Exp() <RBRACKET> <SEMICOLON>
+      Type(indent) <LBRACKET> <RBRACKET> <ID> <EQUAL> <NEW> Type(indent) <LBRACKET> Exp(indent) <RBRACKET> <SEMICOLON>
   }
   
-  void MethodCall():
+  void MethodCall(int indent):
   {}
   {
-      <ID> <DOT> <ID> <LPAREN> ( ExpList() )? <RPAREN> <SEMICOLON>
+      <ID> <DOT> <ID> <LPAREN> ( ExpList(indent) )? <RPAREN> <SEMICOLON>
   }
   
-  void Exp():
+  void Exp(int indent):
   {}
   {
-      Exp9()
+      Exp9(indent)
   }
   
-  void Exp9():
+  void Exp9(int indent):
   {}
   { 
-    Exp10() Exp9a()
+    Exp10(indent) Exp9a(indent)
   }
   
-  void Exp9a():
+  void Exp9a(int indent):
   {}
   {
-    <AND> Exp10() Exp9a()
+    <AND> Exp10(indent) Exp9a(indent)
     |
     {}  
   }
   
-  void Exp10():
+  void Exp10(int indent):
   {}
   { 
-    Exp11() Exp10a()
+    Exp11(indent) Exp10a(indent)
   }
   
-  void Exp10a():
+  void Exp10a(int indent):
   {}
   {
-     ( <LESS_THAN> | <GREATER_THAN> ) Exp11() Exp10a()
+     ( <LESS_THAN> | <GREATER_THAN> ) Exp11(indent) Exp10a(indent)
     |
     {}  
   }
   
-  void Exp11():
+  void Exp11(int indent):
   {}
   { 
-    Exp12() Exp11a()
+    Exp12(indent) Exp11a(indent)
   }
   
-  void Exp11a():
+  void Exp11a(int indent):
   {}
   {
-    <ADD_OP> Exp12() Exp11a()
+    <ADD_OP> Exp12(indent) Exp11a(indent)
     |
-    <MINUS_OP> Exp12() Exp11a()
+    <MINUS_OP> Exp12(indent) Exp11a(indent)
     |
     {} 
   }
   
-  void Exp12():
+  void Exp12(int indent):
   {}
   { 
-    Exp13() Exp12a()
+    Exp13(indent) Exp12a(indent)
   }
   
-  void Exp12a():
+  void Exp12a(int indent):
   {}
   {
-    <MULT_OP> Exp13() Exp12a()
+    <MULT_OP> Exp13(indent) Exp12a(indent)
     |
-    <DIV_OP> Exp13() Exp12a()
+    <DIV_OP> Exp13(indent) Exp12a(indent)
     |
     {} 
   }
   
-  void Exp13():
+  void Exp13(int indent):
   {}
   {
-      Exp16() ( Exp13a() )?
+      Exp16(indent) ( Exp13a(indent) )?
   }
   
-  void Exp13a():
+  void Exp13a(int indent):
   {}
   {
-      <LBRACKET> Exp() <RBRACKET>
+      <LBRACKET> Exp(indent) <RBRACKET>
       |
-      <DOT> ( <LENGTH> | LOOKAHEAD(2) <ID> <LPAREN> ExpList() <RPAREN> | <ID> )
+      <DOT> ( <LENGTH> | LOOKAHEAD(2) <ID> <LPAREN> ExpList(indent) <RPAREN> | <ID> )
       |
-      <NEW> ( <INT> <LBRACKET> Exp() <RBRACKET> | <ID> <LPAREN> <RPAREN> )
+      <NEW> ( <INT> <LBRACKET> Exp(indent) <RBRACKET> | <ID> <LPAREN> <RPAREN> )
   }
   
-  void Exp16():
+  void Exp16(int indent):
   { Token t;}
   {
-    <LPAREN> Exp() <RPAREN>
+    <LPAREN> Exp(indent) <RPAREN>
     |
     t=<NUMBER> 
     |
@@ -302,17 +310,17 @@ void Start(int indent):
     |
     t=<FALSE>
     |
-    <NOT> Exp16()
+    <NOT> Exp16(indent)
     |
     <THIS> <DOT> <ID>
     | LOOKAHEAD(2)
-    <NEW> Type() <LBRACKET> Exp() <RBRACKET>
+    <NEW> Type(indent) <LBRACKET> Exp(indent) <RBRACKET>
     |
-    <NEW> <ID> <LPAREN> ( ExpList() )? <RPAREN>
+    <NEW> <ID> <LPAREN> ( ExpList(indent) )? <RPAREN>
   }
   
-  void ExpList():
+  void ExpList(int indent):
   {}
   {
-      Exp() ( <COMMA> Exp() )*
+      Exp(indent) ( <COMMA> Exp(indent) )*
   }
