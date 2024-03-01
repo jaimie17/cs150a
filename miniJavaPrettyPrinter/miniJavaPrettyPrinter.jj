@@ -14,29 +14,19 @@
   
   public class MiniJavaPrettyPrinter {
   
-    public static void main(String[] args) throws ParseException {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-  
-      SimpleCharStream stream = new SimpleCharStream(reader);
-      MiniJavaParserTokenManager TkMgr = new MiniJavaParserTokenManager(stream);
-      
-      // Tells us whether the program is valid or not
-      MiniJavaParser parser = new MiniJavaParser(TkMgr);
-      boolean valid = false;
-      try {
-          parser.Program();
-          valid = true;
-      } catch (ParseException e) {
-          System.out.println("Program is not valid: " + e.getMessage());
-      }
-  
-      if (valid) {
-          System.out.println("Program is valid.");
-      } else {
-          System.out.println("Program is not valid.");
-  }
+    public static void main(String args[]) {
+        System.out.println("Reading from standard input...");
+        MiniJavaPP t = new MiniJavaPP(System.in);
+        try {
+            t.Start(0);
+            System.out.println("Thank you.");
+        } catch (Exception e) {
+            System.out.println("Oops.");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
-  }
+}
   
   PARSER_END(MiniJavaPrettyPrinter)
   
