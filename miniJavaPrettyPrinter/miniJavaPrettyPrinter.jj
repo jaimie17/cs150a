@@ -159,6 +159,38 @@ void Statement(int indent):
   Exp() 
   <SEMICOLON> 
       {System.out.println(";");}
-  |
-// et cetera
+
+|
+      {System.out.format("%1$" + 4*indent + "s", "");}
+  <WHILE> 
+  <LPAREN> 
+    {System.out.print("while (");}
+  Exp()
+  <RPAREN> 
+    {System.out.println(")");}
+  Statement(indent + 1)
+
+|
+    {System.out.format("%1$" + 4*indent + "s", "");}
+  <PRINTLN> 
+  <LPAREN> 
+    {System.out.print("System.out.println(");}
+  Exp()
+  <RPAREN> 
+  <SEMICOLON> 
+    {System.out.println(");");}
+
+|
+  LOOKAHEAD(2) 
+  t=<ID> <LBRACKET> 
+    {System.out.format("%1$" + 4*indent + "s", "");}
+    {System.out.print(t.image + "[");}
+  Exp()
+  <RBRACKET> 
+  <EQUALS> 
+    {System.out.print("] = ");}
+  Exp() 
+  <SEMICOLON> 
+    {System.out.println(";");}
+  
 }
