@@ -8,13 +8,14 @@ options {
   IGNORE_CASE=false;
 }
 
-PARSER_BEGIN(MiniJavaPP)
-public class MiniJavaPP {
+PARSER_BEGIN(MiniJavaPrettyPrinter)
+
+public class MiniJavaPrettyPrinter {
 
   /** Main entry point. */
   public static void main(String args[]) {
     System.out.println("Reading from standard input...");
-    MiniJavaPP t = new MiniJavaPP(System.in);
+    MiniJavaPrettyPrinter t = new MiniJavaPrettyPrinter(System.in);
     try {
       t.Start(0);
       System.out.println("Thank you.");
@@ -25,7 +26,8 @@ public class MiniJavaPP {
     }
   }
 }
-PARSER_END(MiniJavaPP)
+
+PARSER_END(MiniJavaPrettyPrinter)
 
 /* Program Syntax */
 
@@ -38,33 +40,6 @@ void Start(int indent):
 
 }
 
-void MainClass(int indent) :
-{Token s,t;}
-{
-  "class" 
-  t=<ID> 
-  <LCURLY>  
-      {System.out.println("class "+t.image+"{");}
-  "public" "static" "void" <MAIN> 
-      {System.out.print("    public static void main"); }
-  <LPAREN> "String" <LBRACKET> <RBRACKET> 
-  s=<ID> 
-  <RPAREN>
-      {System.out.println("(String[] "+s.image + "){");  }
-  <LCURLY> 
-  Statement(indent+1) 
-  <RCURLY>
-  <RCURLY>
-      {System.out.println("\n  }\n}\n"); }
-}
-
-
-void Start(int indent):
-{}
-{
-    Program(indent)
-}
-  
   SKIP: /* Whitespace */
   {
     "\t"
@@ -130,42 +105,56 @@ void Start(int indent):
   |  <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" (~["/"] (~["*"])* "*")* "/" >
   }
   
-Here is part of the code for Statement.
-Points to note
-* we are passing in the amount to indent as a parameter of the parsing functions
-* We can get the value of a token, e.g. an <id> using t.image
-```
-
-void Statement(int indent) :
+void MainClass(int indent):
+{Token s,t;}
+{
+  <CLASS>
+  t = <ID> 
+  <LCURLY>  
+      {System.out.println("class "+t.image+"{");}
+  <PUBLIC> <STATIC> <VOID> <MAIN> 
+      {System.out.print("    public static void main"); }
+  <LPAREN> "String" <LBRACKET> <RBRACKET> 
+  s = <ID> 
+  <RPAREN>
+      {System.out.println("(String[] " +s.image + "){");  }
+  <LCURLY> 
+  Statement(indent + 1) 
+  <RCURLY>
+  <RCURLY>
+      {System.out.println("\n  }\n}\n"); }
+}
+  
+void Statement(int indent):
 {Token t;}
 { 
   <LCURLY> 
-      {System.out.format("%1$"+4*indent+"s", "");}
+      {System.out.format("%1$" + 4*indent + "s", "");}
       {System.out.println("{");}
-  Statements(indent+1) 
-      {System.out.format("%1$"+4*indent+"s", "");}
+  Statements(indent + 1) 
+      {System.out.format("%1$"+ 4*indent + "s", "");}
       {System.out.println("}");}
   <RCURLY> 
 
   |
-      {System.out.format("%1$"+4*indent+"s", "");}
+      {System.out.format("%1$" + 4*indent + "s", "");}
   <IF> 
   <LPAREN> 
       {System.out.print("if (");}
   Exp()
   <RPAREN> 
       {System.out.println(")");}
-  Statement(indent+1) 
+  Statement(indent + 1) 
   <ELSE> 
-      {System.out.format("%1$"+4*indent+"s", "");}
+      {System.out.format("%1$" + 4*indent + "s", "");}
       {System.out.println("else ");}
-  Statement(indent+1)
+  Statement(indent + 1)
       {System.out.println();}
 
 |
   LOOKAHEAD(2) 
   t=<ID> <EQUALS> 
-      {System.out.format("%1$"+4*indent+"s", "");}
+      {System.out.format("%1$" + 4*indent + "s", "");}
       {System.out.print(t.image+" = ");}
   Exp() 
   <SEMICOLON> 
