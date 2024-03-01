@@ -17,7 +17,7 @@ public class MiniJavaPrettyPrinter {
         System.out.println("Reading from standard input...");
         MiniJavaPrettyPrinter parser = new MiniJavaPrettyPrinter(System.in);
         try {
-            parser.Start(0); // Corrected method name to "Start"
+            parser.Start(0);
             System.out.println("Thank you.");
         } catch (ParseException e) {
             System.out.println("Oops.");
@@ -25,18 +25,15 @@ public class MiniJavaPrettyPrinter {
             e.printStackTrace();
         }
     }
-
-    // Other methods and logic go here (e.g., parsing rules, pretty printing rules)
-    // ...
-
-    // Example placeholder method (you need to define your actual rules)
-    public void Start(int indentationLevel) throws ParseException {
-        // Your implementation for pretty printing goes here
-        // ...
-    }
 }
 
 PARSER_END(MiniJavaPrettyPrinter)
+
+void Start(int indent):
+{}
+{
+    Program(indent)
+}
   
   SKIP: /* Whitespace */
   {
@@ -106,7 +103,7 @@ PARSER_END(MiniJavaPrettyPrinter)
   /*
    * Parser grammar rules
    */
-  void Program(): 
+  void Program(int indent): 
   {}
   {
       ( ClassDeclaration() )*
