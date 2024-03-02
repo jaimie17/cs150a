@@ -17,7 +17,7 @@ public class MiniJavaPrettyPrinter {
     System.out.println("Reading from standard input...");
     MiniJavaPrettyPrinter t = new MiniJavaPrettyPrinter(System.in);
     try {
-      t.Start(0);
+      t.Start(1);
       System.out.println("Thank you.");
     } catch (Exception e) {
       System.out.println("Oops.");
@@ -111,86 +111,362 @@ void MainClass(int indent):
   <CLASS>
   t = <ID> 
   <LCURLY>  
-      {System.out.println("class "+t.image+"{");}
+      { System.out.println("class " + t.image + " {"); }
   <PUBLIC> <STATIC> <VOID> <MAIN> 
-      {System.out.print("    public static void main"); }
+      { System.out.print("    public static void main"); }
   <LPAREN> "String" <LBRACKET> <RBRACKET> 
   s = <ID> 
   <RPAREN>
-      {System.out.println("(String[] " +s.image + "){");  }
+      { System.out.println("(String[] " + s.image + ") {"); }
   <LCURLY> 
-  Statement(indent + 1) 
+  Statement(indent ) 
   <RCURLY>
   <RCURLY>
-      {System.out.println("\n  }\n}\n"); }
+      { System.out.println("\n  }\n}\n"); }
 }
   
-void Statements(int indent):
+void Statement(int indent):
 {Token t;}
 { 
   <LCURLY> 
-      {System.out.format("%1$" + 4*indent + "s", "");}
-      {System.out.println("{");}
-  Statements(indent + 1) 
-      {System.out.format("%1$"+ 4*indent + "s", "");}
-      {System.out.println("}");}
+      { System.out.println(" {"); }
+  ( Statement(indent) )*
+      { System.out.print(" ".repeat((indent - 1) * 4)); }
+      { System.out.print("} "); }
   <RCURLY> 
 
   |
-      {System.out.format("%1$" + 4*indent + "s", "");}
+  { System.out.print(" ".repeat(indent * 4)); }
   <IF> 
   <LPAREN> 
-      {System.out.print("if (");}
-  Exp()
+      { System.out.print("if ("); }
+  Exp(indent)
   <RPAREN> 
-      {System.out.println(")");}
+      { System.out.print(")"); }
   Statement(indent + 1) 
   <ELSE> 
-      {System.out.format("%1$" + 4*indent + "s", "");}
-      {System.out.println("else ");}
+      { System.out.print("else"); }
   Statement(indent + 1)
-      {System.out.println();}
 
 |
-  LOOKAHEAD(2) 
-  t=<ID> <EQUALS> 
-      {System.out.format("%1$" + 4*indent + "s", "");}
-      {System.out.print(t.image+" = ");}
-  Exp() 
+  LOOKAHEAD(5) 
+  t = <ID> 
+  { 
+    System.out.print(" ".repeat(indent * 4)); 
+    System.out.print(t.image); 
+  }
+  <EQUAL>
+  t = <ID>
+  <DOT> <LENGTH> <SEMICOLON>
+  { System.out.println(" = " + t.image + ".length;"); }
+
+|
+  LOOKAHEAD(3) 
+  t = <ID>
+  { System.out.print(" ".repeat(indent * 4)); }
+  <EQUAL>
+      { System.out.print(t.image+" = "); }
+  Exp(indent) 
   <SEMICOLON> 
-      {System.out.println(";");}
+      { System.out.println(";"); }
 
 |
-      {System.out.format("%1$" + 4*indent + "s", "");}
+  { System.out.print(" ".repeat(indent * 4)); }
   <WHILE> 
   <LPAREN> 
-    {System.out.print("while (");}
-  Exp()
+    { System.out.print("while ("); }
+  Exp(indent)
   <RPAREN> 
-    {System.out.println(")");}
+    { System.out.print(")"); }
   Statement(indent + 1)
 
 |
-    {System.out.format("%1$" + 4*indent + "s", "");}
+{ System.out.println(); }
+{ System.out.print(" ".repeat(indent * 4)); }
   <PRINTLN> 
   <LPAREN> 
-    {System.out.print("System.out.println(");}
-  Exp()
+    { System.out.print("System.out.println("); }
+  Exp(indent)
   <RPAREN> 
   <SEMICOLON> 
-    {System.out.println(");");}
+    { System.out.println(");"); }
 
 |
   LOOKAHEAD(2) 
-  t=<ID> <LBRACKET> 
-    {System.out.format("%1$" + 4*indent + "s", "");}
-    {System.out.print(t.image + "[");}
-  Exp()
+  t = <ID> <LBRACKET> 
+{ System.out.print(" ".repeat(indent * 4)); }
+    { System.out.print(t.image + "["); }
+  Exp(indent)
   <RBRACKET> 
-  <EQUALS> 
-    {System.out.print("] = ");}
-  Exp() 
+  <EQUAL> 
+    { System.out.print("] = "); }
+  Exp(indent) 
   <SEMICOLON> 
-    {System.out.println(";");}
-  
+    { System.out.println(";"); }
+}
+
+void ClassDecls(int indent):
+{Token t,t2;}
+{
+    LOOKAHEAD(3)
+    <CLASS>
+    t = <ID> 
+    <LCURLY>
+    { 
+        System.out.println("class " + t.image + " {"); 
+    }
+    ( VarDecl(indent) )*
+    ( MethodDecl(indent) )*
+    <RCURLY>
+    { 
+        System.out.println("}"); 
+    }
+|
+    <CLASS>
+    t = <ID> 
+    <EXTENDS> 
+    t2 = <ID> 
+    <LCURLY>
+    { 
+        System.out.println("class " + t.image + " extends " + t2.image + " {"); 
+    }
+    ( VarDecl(indent) )*
+    ( MethodDecl(indent) )*
+    <RCURLY>
+    { 
+        System.out.print(" ".repeat(indent * 4));
+        System.out.println("}"); 
+    }
+}
+
+void VarDecl(int indent):
+{Token t;}
+{
+{ System.out.print(" ".repeat(indent * 4)); }
+    Type()
+    t = <ID> 
+    <SEMICOLON>
+    { System.out.println(" " + t.image + ";"); }
+}
+
+void Type():
+{Token t;}
+{
+    LOOKAHEAD(2) 
+    t = <INT> 
+    (
+        <LBRACKET> <RBRACKET> 
+        { System.out.print(t.image + "[]"); }
+    |
+        { System.out.print(t.image); }
+    )
+|
+    t = <BOOLEAN> 
+    { System.out.print(t.image); }
+|
+    t = <ID> 
+    { System.out.print(t.image); }
+}
+
+void MethodDecl(int indent):
+{Token t;}
+{
+    { System.out.println(); }
+    <PUBLIC>
+    { 
+        System.out.print(" ".repeat(indent * 4));
+        System.out.print("public "); 
+    }
+    Type()
+    t = <ID> 
+    <LPAREN>
+    { System.out.print(" " + t.image + "("); }
+    ( ParameterList() )?
+    <RPAREN>
+    <LCURLY>
+    { System.out.println(") {"); }
+    ( LOOKAHEAD(2) VarDecl(indent + 1) )*
+    ( LOOKAHEAD(2) Statement(indent + 1) )*
+    Return(indent)
+    <SEMICOLON>
+    { System.out.println(";"); }
+    <RCURLY>
+    { 
+        System.out.print(" ".repeat(indent * 4));
+        System.out.println("}"); 
+    }
+}
+
+void Return(int indent):
+{Token t;}
+{
+    <RETURN>
+    { 
+        System.out.print(" ".repeat((indent + 1) * 4));
+        System.out.print("return "); 
+    }
+    ( LOOKAHEAD(4) <LPAREN> { System.out.print("("); } )? 
+    ( LOOKAHEAD(3) t = <ID>
+    { System.out.print(t.image); }
+    ( <DOT> <LENGTH> { System.out.print(".length"); } )?
+    |
+    LOOKAHEAD(3) Exp16(indent)
+    )
+    ( <RPAREN> { System.out.print(")"); } )?
+}
+
+void ParameterList():
+{Token t;}
+{
+    Type()
+    t = <ID> 
+    { System.out.print(t.image); }
+    ( <COMMA> Type() t = <ID> { System.out.print(", " + t.image); } )*
+}
+
+void MethodCall(int indent):
+{Token t, t2;}
+{
+    t = <ID> 
+    <DOT> 
+    t2 = <ID> 
+    <LPAREN> 
+    { 
+        System.out.print(t.image + "." + t2.image + "("); 
+    }
+    ( Exp(indent) ( <COMMA> Exp(indent) )* )? 
+    <RPAREN>
+    { System.out.print(")"); }
+}
+
+void ObjectCreation(int indent):
+{Token t;}
+{
+    <NEW> 
+    t = <ID> 
+    <LPAREN> 
+    { System.out.print(" ".repeat(indent * 4)); System.out.print("new " + t.image + "("); }
+    ( Exp(indent) ( <COMMA> Exp(indent) )* )? 
+    <RPAREN>
+    { System.out.println(")"); }
+}
+
+void Exp(int indent):
+{ }
+{
+    Exp9(indent)
+}
+
+void Exp9(int indent):
+{ }
+{ 
+    Exp10(indent) 
+    ( 
+        <ADD_OP> { System.out.print(" + "); } Exp10(indent) 
+        | 
+        <MINUS_OP> { System.out.print(" - "); } Exp10(indent) 
+    )*
+}
+
+void Exp10(int indent):
+{ }
+{ 
+    Exp11(indent) 
+    ( 
+        <LESS_THAN> { System.out.print(" < "); } Exp11(indent) 
+        | 
+        <GREATER_THAN> { System.out.print(" > "); } Exp11(indent) 
+    )*
+}
+
+void Exp11(int indent):
+{ }
+{ 
+    Exp12(indent) 
+    ( 
+        <MULT_OP> { System.out.print(" * "); } Exp12(indent) 
+        | 
+        <DIV_OP> { System.out.print(" / "); } Exp12(indent) 
+    )*
+}
+
+void Exp12(int indent):
+{ }
+{ 
+    Exp13(indent) 
+    ( 
+        <AND> { System.out.print(" && "); } Exp13(indent) 
+    )*
+}
+
+void Exp13(int indent):
+{ Token t; }
+{
+    LOOKAHEAD(3)
+    <NEW> 
+    ( 
+        <INT> <LBRACKET> { System.out.print("new int["); } Exp(indent) <RBRACKET> { System.out.print("]"); } 
+        | 
+        t = <ID> <LPAREN>
+        { System.out.print("new " + t.image + "("); }
+        ( ExpList(indent) )?
+        <RPAREN> 
+        { System.out.print(")"); } 
+    )
+    |
+    LOOKAHEAD(3) t = <ID> <LBRACKET> { System.out.print(t.image + "["); } Exp(indent) <RBRACKET> { System.out.print("]"); }
+    | 
+    <DOT> 
+    ( 
+        <LENGTH> { System.out.print(".length"); } 
+        | 
+        LOOKAHEAD(3) t = <ID> <LPAREN> { System.out.print("." + t.image + "("); } ExpList(indent) <RPAREN> { System.out.print(")"); } 
+        | 
+        t = <ID> { System.out.print("." + t.image); } 
+    )
+    |
+    LOOKAHEAD(2)
+    MethodCall(indent)
+    |
+    ObjectCreation(indent)
+    |
+    Exp16(indent) 
+}
+
+void Exp16(int indent):
+{ Token t; }
+{
+    t = <NUMBER> { System.out.print(t.image); } 
+    |
+    t = <ID> { System.out.print(t.image); } (<DOT> <LENGTH> { System.out.print(t.image + ".length"); })?
+    |
+    t = <TRUE> { System.out.print(t.image); } 
+    |
+    t = <FALSE> { System.out.print(t.image); } 
+    |
+    <NOT> { System.out.print("!"); } Exp16(indent) 
+    |
+    <THIS> <DOT> t = <ID> { System.out.print("this." + t.image); }
+    ( <LPAREN> { System.out.print("("); } Exp(indent) <RPAREN> { System.out.print(")"); } )?
+    |
+    <LPAREN> { System.out.print("("); } Exp(indent) <RPAREN> { System.out.print(")"); }
+    (
+        <DOT> 
+        ( 
+            <LENGTH> { System.out.print(".length"); } 
+            | 
+            LOOKAHEAD(3) t = <ID> <LPAREN> { System.out.print("." + t.image + "("); } ExpList(indent) <RPAREN> { System.out.print(")"); } 
+            | 
+            t = <ID> { System.out.print("." + t.image); } 
+        )
+    )?
+}
+
+void ExpList(int indent):
+{ }
+{
+    Exp(indent) 
+    ( 
+        <COMMA> { System.out.print(", "); } Exp(indent) 
+    )*
 }
