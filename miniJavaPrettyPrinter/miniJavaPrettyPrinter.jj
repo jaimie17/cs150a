@@ -119,7 +119,7 @@ void MainClass(int indent):
   <RPAREN>
       { System.out.println("(String[] " + s.image + ") {"); }
   <LCURLY> 
-  Statement(indent ) 
+  Statement(indent + 1) 
   <RCURLY>
   <RCURLY>
       { System.out.println("\n  }\n}\n"); }
