@@ -2,6 +2,9 @@
  * Group Members: Samiyanur Islam and Jaimie Louie
  * PA3
  * Github Link: https://github.com/jaimie17/cs150a/blob/main/miniJavaPrettyPrinter/miniJavaPrettyPrinter.jj
+ *
+ * Fixed Issues: 2 warnings in the generated SimpleCharStream file can be fixed by adding deprecated before those two methods.
+ * Successful: no parsing conflicts, no errors, and gives the same output as the original. It also works on the same demo code with all newlines and extra spaces removed.
  */
 
 options {
