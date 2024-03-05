@@ -1,41 +1,23 @@
 /*
- * This is MiniC.jj file.
- * It will build a tree we can traverse using the Visitor pattern!
- * The language is MiniC, which is the subset of MiniJava
- * consisting of only MethodDecls (i.e. no classes or instance variables)
- * and the only types are int and boolean
- * and the only statments are Assign, If, and Print
- * all of the expressions are available except for && 
- * that is <, +,-,*  integerLiterals and IdentifierExpressions
-
-* In this problem set you will extend the MiniC.jj ASTG generator to all of MiniJava
-You should
-1) download the MiniC folder from github, and rename it to be MiniJava
-2) create a private github repository and upload the MiniC folder for your group to use
-3) rename the MiniC.jj to MiniJava.jj and add rules so that it generates the Abstract Syntax Trees for full MiniJava
-4) the AST_Visitor should work for full MiniJava with no changes...
-
-Every team member should create a 60 second video showing you running your MiniJava AST_Visitor to print the Abstract Syntax Tree for a MiniJava
-program which contains 2 classes, 2 methods, and uses method calls and array assignments and array lookups
-
-You should also create a second 60 second video where you explain in detail what you had to do to generate AST for some MiniJava node, for example, the ClassDecl node.
-
-Upload your MiniJava.jj file with a comment at the top containing links to your two videos
-and the names of the people on your team.
+ * Team members: Jaimie Louie and Samiyanur Islam
+ * PA4
+ * Github Link:
+ * Jaimie's video:
+ * Samiya's video:
  */
 
 options {
   IGNORE_CASE=false;
 }
 
-PARSER_BEGIN(MiniC)
+PARSER_BEGIN(MiniJava)
 import syntaxtree.*;
 
-public class MiniC {
+public class MiniJava {
 
   /** Main entry point. */
   public static void main(String args[]) {
-    MiniC t = new MiniC(System.in);
+    MiniJava t = new MiniJava(System.in);
     try {
       MethodDeclList n = t.Start();
 
@@ -44,7 +26,7 @@ public class MiniC {
       n.accept(v1, 0);
 
       System.out.println("\n\nPretty Print the Program");
-      Visitor v2 = new PP_Visitor();  // pretty prints the MiniC program
+      Visitor v2 = new PP_Visitor();  // pretty prints the MiniJava program
       String s = (String) n.accept(v2, 0);
       System.out.println("#include <stdio.h>\n#include <stdbool.h>\nvoid print(int n){printf(\"%10d\\n\",n);}");
       System.out.println(s);
@@ -72,7 +54,7 @@ public class MiniC {
 
 }
 
-PARSER_END(MiniC)
+PARSER_END(MiniJava)
 
 SKIP: /* Whitespace */
 {
