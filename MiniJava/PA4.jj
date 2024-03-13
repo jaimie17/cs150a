@@ -22,13 +22,11 @@ public class PA4 {
   public static void main(String args[]) {
     PA4 t = new PA4(System.in);
     try {
-      MethodDeclList n = t.Start();
+      Program p = t.Start();
 
-/* uncomment this only for PA4a
       System.out.println("\n\nPretty Printing the Abstract Syntax Tree");
       Visitor v1 = new AST_Visitor();  // pretty prints the Abstract Syntax Tree
       n.accept(v1, 0);
-*/
 
 /* uncomment this only for PA4b
       System.out.println("\n\nPretty Print the Program");
@@ -119,20 +117,38 @@ TOKEN:
 
 /* Program Syntax */
 
-MethodDeclList Start():
+void Start():
 {
-  MethodDeclList ms;
+  Program p;
 }
 {
-  <PREFACE>
-   ms = MethodDecls()
-  {return ms;}
-  <EOF>
-
+  p = Program()
+  { return p; }
 }
 
 
-VarDeclList VarDecls() : 
+Program Program():
+{
+  MainClass m;
+  ClassDeclList clist;
+}
+{
+  m = MainClass()
+  clist = ClassDeclList()
+  { return new Program(m, clist); }
+}
+
+MainClass MainClass() :
+{
+  Token t;
+  Statement s;
+}
+{
+  <CLASS> t=<ID> <LCURLY> <PUBLIC> <STATIC> <VOID> "main" <LPAREN> <STRING> <LBRACKET> <RBRACKET> <ID> <RPAREN> <LCURLY> s=Statement() <RCURLY> <RCURLY>
+  { return new MainClass(new Identifier(t.image), s); }
+}
+
+VarDeclList VarDecls(): 
 {
   VarDeclList vlist = null;
   VarDecl v;
