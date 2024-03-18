@@ -1,12 +1,7 @@
 /*
  * This is PA4.jj file.
- * It will build a tree we can traverse using the Visitor pattern!
- * The language is MiniC, which is the subset of MiniJava
- * consisting of only MethodDecls (i.e. no classes or instance variables)
- * and the only types are int and boolean
- * and the only statments are Assign, If, and Print
- * all of the expressions are available except for && 
- * that is <, +,-,*  integerLiterals and IdentifierExpressions
+ * Jaimie Louie and Samiyanur Islam
+ * PA4
  */
 
 options {
