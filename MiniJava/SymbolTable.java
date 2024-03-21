@@ -3,6 +3,7 @@ import java.util.HashMap;
 
 public class SymbolTable { 
 
+    public HashMap<String,ClassDecl> classes = new HashMap<String, ClassDecl>();
     public HashMap<String,MethodDecl> methods = new HashMap<String, MethodDecl>();
     public HashMap<String,VarDecl> variables = new HashMap<String, VarDecl>() ;
     public HashMap<String,Formal> formals = new HashMap<String, Formal>() ;
@@ -12,7 +13,12 @@ public class SymbolTable {
     }
 
     public String toString(){
-        String result = "Methods: \n";
+        String result = "Classes: \n";
+        for (String key : classes.keySet()) {
+            result += key + ": "+ classes.get(key).toString() + ", \n";
+        }
+        result += "\n";
+        result += "Methods: \n";
         for (String key : methods.keySet()) {
             result += key + ": "+ methods.get(key).toString() + ", \n";
         }

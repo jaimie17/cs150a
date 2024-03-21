@@ -27,13 +27,11 @@ public class PA4 {
       String s = (String) n.accept(v2, 0);
       System.out.println(s);
 
-/* uncomment this only for PA4c and PA4d
       System.out.println("\n\nGenerating Symbol Table");
       SymbolTableVisitor v3 = new SymbolTableVisitor(); // generates a SymbolTable
       SymbolTable st = v3.symbolTable;
       n.accept(v3,"");
       System.out.println(st);
-*/
 
 /* uncomment this only for PA4d
       System.out.println("\n\nType Checking");
