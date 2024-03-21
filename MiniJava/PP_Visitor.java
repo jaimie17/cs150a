@@ -1,10 +1,9 @@
 import syntaxtree.*;
 
 /* 
- * this class uses the Visitor pattern 
- * to pretty print the miniC program
- * The idea is to have each node return its string representation!
-*/
+ * Jaimie Louie and Samiyanur Islam
+ * PA4b
+ */
 
  public class PP_Visitor implements Visitor
  {
