@@ -1,5 +1,4 @@
 /*
- * This is PA4.jj file.
  * Jaimie Louie and Samiyanur Islam
  * PA4
  */
@@ -76,7 +75,7 @@ TOKEN:
 |  <EXTENDS:    "extends">
 |  <RETURN:     "return">
 |  <INT:        "int">
-|  <BOOLEAN:    "bool">
+|  <BOOLEAN:    "boolean">
 |  <TRUE:       "true">
 |  <FALSE:      "false">
 |  <IF:         "if">
