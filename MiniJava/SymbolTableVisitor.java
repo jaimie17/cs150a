@@ -2,17 +2,8 @@ import syntaxtree.*;
 import java.util.HashMap;
 
 /*
- * SymbolTableVisitor class
- * This is the visitor that will be used to build the symbol table.
- * It has the method to traverse the syntax tree for each node type,
- * For each declaration it will add the appropriate information to the symbol table.
- * It will use prefixes for the identifiers to handle overloading.
- * Inside a class, the prefix will be the class name.
- * Inside a method, the prefix will be the method name.
- * The prefixes will be separated by a dollar sign, e.g. MainClass$main$var1
- * The symbol table is in instance variable and visible to all methods in the class.
- * 
- * The data parameter will be the current prefix, initially the empty string ""
+ * Jaimie Louie and Samiyanur Islam
+ * PA4c
  */
 public class SymbolTableVisitor implements Visitor {
 
