@@ -33,17 +33,26 @@ public class TypeCheckingVisitor implements Visitor {
             return "boolean";
         }else if (node.getClass().equals(syntaxtree.IntegerType.class)){
             return "int";
+        }else if (node.getClass().equals(syntaxtree.IntArrayType.class)){
+            return "int[]";
+        }else if (node.getClass().equals(syntaxtree.IdentifierType.class)){
+            return ((IdentifierType)node).s;
         } else {return "*void";}
     }
+
 
     public Object visit(And node, Object data){ 
         // not in miniC
         Exp e1=node.e1;
         Exp e2=node.e2;
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
-        
-        return "";
+        String t1 = (String) node.e1.accept(this, data);
+        String t2 = (String) node.e2.accept(this, data);
+        if (!t1.equals("boolean") || !t2.equals("boolean")) {
+            System.out.println("Type error: " + t1 + " != " + t2+" in node "+node);
+            num_errors++;
+        }
+    
+        return "boolean";
     } 
 
     public Object visit(ArrayAssign node, Object data){ 
@@ -103,7 +112,7 @@ public class TypeCheckingVisitor implements Visitor {
         // have to check that the method exists and that
         // the types of the formal parameters are the same as
         // the types of the corresponding arguments.
-        //Exp e1 = node.e1; // in miniC there is no e1 for a call
+        Exp e1 = node.e1; // in miniC there is no e1 for a call
         Identifier i = node.i;
         ExpList e2=node.e2;
 
@@ -260,8 +269,17 @@ public class TypeCheckingVisitor implements Visitor {
         Exp e2=node.e2;
         String t1 = (String) node.e1.accept(this, data);
         String t2 = (String) node.e2.accept(this, data);
+        // Check for null types
+        if (t1 == null || t2 == null) {
+            System.out.println("Null Type error in LessThan node: " + node);
+            num_errors++;
+            return "error";
+        }
+
+        // Check if both operands are integers
         if (!t1.equals("int") || !t2.equals("int")) {
-            System.out.println("Comparison Type error: " + t1 + " != " + t2+" in node"+node);
+            System.out.println("Comparison Type error: " + t1 + " != " + t2 + " in LessThan node: " + node);
+            System.out.println("in " + node.accept(miniC, 0));
             num_errors++;
         }
 
@@ -366,14 +384,19 @@ public class TypeCheckingVisitor implements Visitor {
         Exp e2=node.e2;
         String t1 = (String) node.e1.accept(this, data);
         String t2 = (String) node.e2.accept(this, data);
-        if (!t1.equals("int") || !t2.equals("int")) {
-            System.out.println("Type error: " + t1 + " != " + t2+" in node"+node);
-            num_errors++;  
+        if (t1 == null || t2 == null) {
+            System.out.println("Type error: Null type in Plus node in visit(Plus node, Object data)");
+            num_errors++;
+            return null; // Or handle the error in a different way based on your requirements
         }
-
-        return "int"; 
+    
+        if (!t1.equals("int") || !t2.equals("int")) {
+            System.out.println("Type error: " + t1 + " != " + t2 + " in node " + node);
+            num_errors++;
+        }
+    
+        return "int";
     }
-
 
     public Object visit(Print node, Object data){ 
         Exp e=node.e;
@@ -470,12 +493,19 @@ public class TypeCheckingVisitor implements Visitor {
 
     public Object visit(While node, Object data){ 
         // not in miniC
-        Exp e=node.e;
-        Statement s=node.s;
-        node.e.accept(this, data);
+        Exp e = node.e;
+        Statement s = node.s;
+        String t = (String) node.e.accept(this, data);
+
+        // Check if the condition expression is a boolean
+        if (!t.equals("boolean")) {
+            System.out.println("While Condition Type error: " + t + " is not a boolean");
+            num_errors++;
+        }
+
         node.s.accept(this, data);
 
-        return data; 
+        return "*void";
     }
 
 }
