@@ -58,30 +58,57 @@ public class TypeCheckingVisitor implements Visitor {
     public Object visit(ArrayAssign node, Object data){ 
         // not in miniC
         Identifier i = node.i;
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        node.i.accept(this,data);
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
+        Exp e1 = node.e1;
+        Exp e2 = node.e2;
+
+        String type1 = (String) i.accept(this, data);
+        String type2 = (String) e1.accept(this, data);
+        String type3 = (String) e2.accept(this, data);
+
+        if (type1 != null && !type1.equals("int[]")) {
+            System.out.println("ArrayAssign Type error: Identifier " + i.s + " is not of type int[]");
+            num_errors++;
+        }
+        if (type2 != null && !type2.equals("int")) {
+            System.out.println("ArrayAssign Type error: Array index must be of type int");
+            num_errors++;
+        }
+        if (type3 != null && !type3.equals("int")) {
+            System.out.println("ArrayAssign Type error: Assignment value must be of type int");
+            num_errors++;
+        }
 
         return "*void";
-    } 
+    }
 
     public Object visit(ArrayLength node, Object data){ 
         // not in miniC
-        Exp e=node.e;
-        node.e.accept(this, data);
-        return data; 
-    } 
+        Exp e = node.e;
+        String type = (String) e.accept(this, data);
+        if (!type.equals("int[]")) {
+            System.out.println("ArrayLength Type error: Cannot get length of non-array type");
+            num_errors++;
+        }
+        return "int";
+    }
 
     public Object visit(ArrayLookup node, Object data){ 
         // not in miniC
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
-        return data; 
-    } 
+        Exp e1 = node.e1;
+        Exp e2 = node.e2;
+        String type1 = (String) e1.accept(this, data);
+        String type2 = (String) e2.accept(this, data);
+        if (!type1.equals("int[]")) {
+            System.out.println("ArrayLookup Type error: Cannot index into non-array type");
+            num_errors++;
+        }
+        if (!type2.equals("int")) {
+            System.out.println("ArrayLookup Type error: Index must be of type int");
+            num_errors++;
+        }
+        return "int";
+    }
+
 
     public Object visit(Assign node, Object data){ 
         Identifier i=node.i;
@@ -239,14 +266,17 @@ public class TypeCheckingVisitor implements Visitor {
     }
 
     public Object visit(If node, Object data){ 
-        Exp e=node.e;
-        Statement s1=node.s1;
-        Statement s2=node.s2;
-        node.e.accept(this, data);
-        node.s1.accept(this, data);
-        node.s2.accept(this, data);
+        Exp e = node.e;
+        Statement s1 = node.s1;
+        Statement s2 = node.s2;
 
-        return "*void"; 
+        String type = (String) e.accept(this, data);
+        if (!type.equals("boolean")) {
+            System.out.println("If Type error: Condition must be of type boolean");
+            num_errors++;
+        }
+
+        return "*void";
     }
 
     public Object visit(IntArrayType node, Object data){
@@ -354,19 +384,26 @@ public class TypeCheckingVisitor implements Visitor {
 
     public Object visit(NewArray node, Object data){ 
         // not in miniC
-        Exp e=node.e;
-        node.e.accept(this, data);
-
-        return data; 
+        Exp e = node.e;
+        String type = (String) e.accept(this, data);
+        if (!type.equals("int")) {
+            System.out.println("NewArray Type error: Array size must be of type int");
+            num_errors++;
+        }
+        return "int[]";
     }
 
 
     public Object visit(NewObject node, Object data){ 
         // not in miniC
-        Identifier i=node.i;
-        node.i.accept(this, data);
-
-        return data; 
+        Identifier i = node.i;
+        if (st.classes.containsKey(i.s)) {
+            return i.s;
+        } else {
+            System.out.println("NewObject Type error: Class " + i.s + " does not exist");
+            num_errors++;
+            return "*void";
+        }
     }
 
 
@@ -509,4 +546,3 @@ public class TypeCheckingVisitor implements Visitor {
     }
 
 }
-
