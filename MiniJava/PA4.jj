@@ -33,12 +33,12 @@ public class PA4 {
       n.accept(v3,"");
       System.out.println(st);
 
-/* uncomment this only for PA4d
+
       System.out.println("\n\nType Checking");
       TypeCheckingVisitor v4 = new TypeCheckingVisitor(st);
       n.accept(v4,"");
       System.out.println(v4.num_errors+" type errors found");
-*/
+
       System.out.println("\n\nDone!");
 
     } catch (Exception e) {
