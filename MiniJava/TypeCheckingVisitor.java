@@ -98,6 +98,10 @@ public class TypeCheckingVisitor implements Visitor {
         Exp e2 = node.e2;
         String type1 = (String) e1.accept(this, data);
         String type2 = (String) e2.accept(this, data);
+        if (type1 == null || type2 == null) {
+            System.out.println("Type error: One of the operands is null in ArrayLookup node: " + node);
+            return "ErrorType";
+        }
         if (!type1.equals("int[]")) {
             System.out.println("ArrayLookup Type error: Cannot index into non-array type");
             num_errors++;
@@ -115,6 +119,12 @@ public class TypeCheckingVisitor implements Visitor {
         Exp e=node.e;
         String t1 = (String) node.i.accept(this, data);
         String t2 = (String) node.e.accept(this, data);
+
+        if (t1 == null || t2 == null) {
+            System.out.println("Type error: One of the operands is null in Assign node: " + node);
+            return "ErrorType";
+        }
+
         if (!t1.equals(t2)) {
             System.out.println("Assign Type error: " + t1 + " != " + t2+" in node"+node);
             System.out.println("in "+node.accept(miniC,0));
@@ -142,11 +152,16 @@ public class TypeCheckingVisitor implements Visitor {
         Exp e1 = node.e1; // in miniC there is no e1 for a call
         Identifier i = node.i;
         ExpList e2=node.e2;
-
-        
+    
         // first we get the method m that this call is calling
         MethodDecl m = st.methods.get("$"+i.s);
-        
+    
+        // Check if m is null
+        if (m == null) {
+            System.out.println("Type error: Method " + i.s + " does not exist");
+            return "ErrorType";
+        }
+    
         // paramTypes is the type of the parameters of the method
         // e.g. "int int boolean int"
         // we get the parameter types by "typing" the formals
@@ -162,9 +177,9 @@ public class TypeCheckingVisitor implements Visitor {
             System.out.println("in \n"+node.accept(miniC,0));
             num_errors++;
         }
-
+    
         return getTypeName(m.t);
-    } 
+    }
 
     public Object visit(ClassDecl node, Object data){ 
         // not in miniC
@@ -299,20 +314,21 @@ public class TypeCheckingVisitor implements Visitor {
         Exp e2=node.e2;
         String t1 = (String) node.e1.accept(this, data);
         String t2 = (String) node.e2.accept(this, data);
-        // Check for null types
+    
+        // Check if t1 or t2 is null
         if (t1 == null || t2 == null) {
-            System.out.println("Null Type error in LessThan node: " + node);
+            System.out.println("Type error: One of the operands is null in LessThan node: " + node);
             num_errors++;
-            return "error";
+            return "ErrorType";
         }
-
+    
         // Check if both operands are integers
         if (!t1.equals("int") || !t2.equals("int")) {
             System.out.println("Comparison Type error: " + t1 + " != " + t2 + " in LessThan node: " + node);
             System.out.println("in " + node.accept(miniC, 0));
             num_errors++;
         }
-
+    
         return "boolean";
     }
 
@@ -333,19 +349,25 @@ public class TypeCheckingVisitor implements Visitor {
         VarDeclList v=node.v;
         StatementList s=node.s;
         Exp e=node.e;
-        //node.t.accept(this, data);
-        //node.i.accept(this, data);
+
+        node.t.accept(this, data);
+        node.i.accept(this, data);
         if (node.f != null){
-            //node.f.accept(this, data);
+            node.f.accept(this, data);
         }
         if (node.v != null){
-            //node.v.accept(this, data);
+            node.v.accept(this, data);
         }
         if (node.s != null){
             node.s.accept(this, data+"$"+i.s);
         }
         
         String returnType = (String) node.e.accept(this, data+"$"+i.s);
+
+        if (returnType == null) {
+            System.out.println("Type error: Return type is null in MethodDecl node");
+            return "ErrorType";
+        }
 
         if (!returnType.equals(getTypeName(node.t))) {
             System.out.println("Method Return Type error: " + returnType + " != " + getTypeName(node.t)+" in method"+i.s);
@@ -374,6 +396,12 @@ public class TypeCheckingVisitor implements Visitor {
         Exp e2=node.e2;
         String t1 = (String) node.e1.accept(this, data);
         String t2 = (String) node.e2.accept(this, data);
+
+        if (t1 == null || t2 == null) {
+            System.out.println("Type error: One of the operands is null in Minus node: " + node);
+            return "ErrorType";
+        }
+
         if (!t1.equals("int") || !t2.equals("int")) {
             System.out.println("Type error: " + t1 + " != " + t2+" in node"+node);
             num_errors++;
@@ -386,6 +414,11 @@ public class TypeCheckingVisitor implements Visitor {
         // not in miniC
         Exp e = node.e;
         String type = (String) e.accept(this, data);
+
+        if (type == null) {
+            System.out.println("Type error: Array size is null in NewArray node: " + node);
+            return "ErrorType";
+        }
         if (!type.equals("int")) {
             System.out.println("NewArray Type error: Array size must be of type int");
             num_errors++;
@@ -421,10 +454,10 @@ public class TypeCheckingVisitor implements Visitor {
         Exp e2=node.e2;
         String t1 = (String) node.e1.accept(this, data);
         String t2 = (String) node.e2.accept(this, data);
+        
         if (t1 == null || t2 == null) {
-            System.out.println("Type error: Null type in Plus node in visit(Plus node, Object data)");
-            num_errors++;
-            return null; // Or handle the error in a different way based on your requirements
+            System.out.println("Type error: One of the operands is null in Plus node: " + node);
+            return "ErrorType";
         }
     
         if (!t1.equals("int") || !t2.equals("int")) {
@@ -438,7 +471,7 @@ public class TypeCheckingVisitor implements Visitor {
     public Object visit(Print node, Object data){ 
         Exp e=node.e;
         String t1 = (String) node.e.accept(this, data);
-        if (!t1.equals("int")) {
+        if (!t1.equals("*void")) {
             System.out.println("Print Type error: " + t1 + " is not a valid type for print");
             num_errors++;
         }
@@ -486,6 +519,11 @@ public class TypeCheckingVisitor implements Visitor {
         Exp e2=node.e2;
         String t1 = (String) node.e1.accept(this, data);
         String t2 = (String) node.e2.accept(this, data);
+
+        if (t1 == null || t2 == null) {
+            System.out.println("Type error: One of the operands is null in Times node: " + node);
+            return "ErrorType";
+        }
         if (!t1.equals("int") || !t2.equals("int")) {
             System.out.println("Type error: " + t1 + " != " + t2+" in node"+node);
             num_errors++;
@@ -509,6 +547,10 @@ public class TypeCheckingVisitor implements Visitor {
             return "boolean";
         } else if (node.t instanceof IntegerType) {
             return "int";
+        } else if (node.t instanceof IntArrayType) {
+            return "int[]";
+        } else if (node.t instanceof IdentifierType) {
+            return ((IdentifierType)node.t).s;
         } else {
             System.out.println("Unknown Type, Type error: " + node.t + " is not a valid type");
             num_errors++;
@@ -536,7 +578,7 @@ public class TypeCheckingVisitor implements Visitor {
 
         // Check if the condition expression is a boolean
         if (!t.equals("boolean")) {
-            System.out.println("While Condition Type error: " + t + " is not a boolean");
+            System.out.println("While Condition Type error: " + e + " is not a boolean");
             num_errors++;
         }
 
