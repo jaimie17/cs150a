@@ -2,18 +2,8 @@ import syntaxtree.*;
 import java.util.HashMap;
 
 /*
- * TypeCheckingVisitor
- *    This currently only checks MiniC programs for type errors.
- * This is the visitor that will be used to check for type errors.
- * It has the method to traverse the syntax tree for each node type,
- * The constructor will take the symbol table as a parameter.
- * The data parameter will be the current prefix, initially the empty string ""
- * It will use the symbol table to check the types of the expressions and statements.
- * Errors will be reported to the standard output and the program will continue
- * as if there was no error, looking for more errors
- * 
- * The visit methods will return the type of the node as a string
- * and will use "*void"  for statements and nodes that don't have a type
+ * Jaimie Louie and Samiyanur Islam
+ * PA4d
  */
 public class TypeCheckingVisitor implements Visitor {
 
@@ -326,14 +316,8 @@ public class TypeCheckingVisitor implements Visitor {
         String t2 = (String) node.e2.accept(this, data);
     
         // Check if t1 or t2 is null
-        if (t1 == null) {
-            System.out.println("Type error: first operand should be boolean in LessThan node: " + node);
-            num_errors++;
-            return "boolean";
-        }
-
-        if (t2 == null) {
-            System.out.println("Type error: second operand should be boolean in LessThan node: " + node);
+        if (t1 == null || t2 == null) {
+            System.out.println("Type error: Operands should evaluate to boolean in LessThan node: " + node);
             num_errors++;
             return "boolean";
         }
