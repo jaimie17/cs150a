@@ -424,6 +424,7 @@ public class TypeCheckingVisitor implements Visitor {
 
         if (type == null) {
             System.out.println("Type error: Array size is null in NewArray node: " + node);
+            num_errors++;
             return "int[]";
         }
         if (!type.equals("int")) {
