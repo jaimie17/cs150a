@@ -96,17 +96,25 @@ public class TypeCheckingVisitor implements Visitor {
         // not in miniC
         Exp e1 = node.e1;
         Exp e2 = node.e2;
-        String type1 = (String) e1.accept(this, data);
-        String type2 = (String) e2.accept(this, data);
-        if (type1 == null || type2 == null) {
-            System.out.println("Type error: One of the operands is null in ArrayLookup node: " + node);
-            return "ErrorType";
+        String t1 = (String) e1.accept(this, data);
+        String t2 = (String) e2.accept(this, data);
+        if (t1 == null) {
+            System.out.println("Type error: first operand should be int in ArrayLookup node: " + node);
+            num_errors++;
+            return "int";
         }
-        if (!type1.equals("int[]")) {
+
+        if (t2 == null) {
+            System.out.println("Type error: second operand should be int in ArrayLookup node: " + node);
+            num_errors++;
+            return "int";
+        }
+
+        if (!t1.equals("int[]")) {
             System.out.println("ArrayLookup Type error: Cannot index into non-array type");
             num_errors++;
         }
-        if (!type2.equals("int")) {
+        if (!t2.equals("int")) {
             System.out.println("ArrayLookup Type error: Index must be of type int");
             num_errors++;
         }
@@ -121,8 +129,9 @@ public class TypeCheckingVisitor implements Visitor {
         String t2 = (String) node.e.accept(this, data);
 
         if (t1 == null || t2 == null) {
-            System.out.println("Type error: One of the operands is null in Assign node: " + node);
-            return "ErrorType";
+            System.out.println("Assign Type error: Identifier and expression types do not match in Assign node: " + node);
+            num_errors++;
+            return "*void";
         }
 
         if (!t1.equals(t2)) {
@@ -159,7 +168,8 @@ public class TypeCheckingVisitor implements Visitor {
         // Check if m is null
         if (m == null) {
             System.out.println("Type error: Method " + i.s + " does not exist");
-            return "ErrorType";
+            num_errors++;
+            return "*void";
         }
     
         // paramTypes is the type of the parameters of the method
@@ -316,10 +326,16 @@ public class TypeCheckingVisitor implements Visitor {
         String t2 = (String) node.e2.accept(this, data);
     
         // Check if t1 or t2 is null
-        if (t1 == null || t2 == null) {
-            System.out.println("Type error: One of the operands is null in LessThan node: " + node);
+        if (t1 == null) {
+            System.out.println("Type error: first operand should be boolean in LessThan node: " + node);
             num_errors++;
-            return "ErrorType";
+            return "boolean";
+        }
+
+        if (t2 == null) {
+            System.out.println("Type error: second operand should be boolean in LessThan node: " + node);
+            num_errors++;
+            return "boolean";
         }
     
         // Check if both operands are integers
@@ -366,7 +382,7 @@ public class TypeCheckingVisitor implements Visitor {
 
         if (returnType == null) {
             System.out.println("Type error: Return type is null in MethodDecl node");
-            return "ErrorType";
+            return "*void";
         }
 
         if (!returnType.equals(getTypeName(node.t))) {
@@ -397,9 +413,16 @@ public class TypeCheckingVisitor implements Visitor {
         String t1 = (String) node.e1.accept(this, data);
         String t2 = (String) node.e2.accept(this, data);
 
-        if (t1 == null || t2 == null) {
-            System.out.println("Type error: One of the operands is null in Minus node: " + node);
-            return "ErrorType";
+        if (t1 == null) {
+            System.out.println("Type error: first operand should be int is null in Minus node: " + node);
+            num_errors++;
+            return "int";
+        }
+
+        if (t2 == null) {
+            System.out.println("Type error: second operand should be int in Minus node: " + node);
+            num_errors++;
+            return "int";
         }
 
         if (!t1.equals("int") || !t2.equals("int")) {
@@ -417,7 +440,7 @@ public class TypeCheckingVisitor implements Visitor {
 
         if (type == null) {
             System.out.println("Type error: Array size is null in NewArray node: " + node);
-            return "ErrorType";
+            return "int[]";
         }
         if (!type.equals("int")) {
             System.out.println("NewArray Type error: Array size must be of type int");
@@ -430,7 +453,7 @@ public class TypeCheckingVisitor implements Visitor {
     public Object visit(NewObject node, Object data){ 
         // not in miniC
         Identifier i = node.i;
-        if (st.classes.containsKey(i.s)) {
+        if (st.classes.containsKey(data + "$" + i.s)) {
             return i.s;
         } else {
             System.out.println("NewObject Type error: Class " + i.s + " does not exist");
@@ -455,9 +478,16 @@ public class TypeCheckingVisitor implements Visitor {
         String t1 = (String) node.e1.accept(this, data);
         String t2 = (String) node.e2.accept(this, data);
         
-        if (t1 == null || t2 == null) {
-            System.out.println("Type error: One of the operands is null in Plus node: " + node);
-            return "ErrorType";
+        if (t1 == null) {
+            System.out.println("Type error: first operand should be int in Plus node: " + node);
+            num_errors++;
+            return "int";
+        }
+
+        if (t2 == null) {
+            System.out.println("Type error:second operand should be int in Plus node: " + node);
+            num_errors++;
+            return "int";
         }
     
         if (!t1.equals("int") || !t2.equals("int")) {
@@ -520,10 +550,18 @@ public class TypeCheckingVisitor implements Visitor {
         String t1 = (String) node.e1.accept(this, data);
         String t2 = (String) node.e2.accept(this, data);
 
-        if (t1 == null || t2 == null) {
-            System.out.println("Type error: One of the operands is null in Times node: " + node);
-            return "ErrorType";
+        if (t1 == null) {
+            System.out.println("Type error: first operand should be int in Times node: " + node);
+            num_errors++;
+            return "int";
         }
+
+        if (t2 == null) {
+            System.out.println("Type error: second operand should be int in Times node: " + node);
+            num_errors++;
+            return "int";
+        }
+
         if (!t1.equals("int") || !t2.equals("int")) {
             System.out.println("Type error: " + t1 + " != " + t2+" in node"+node);
             num_errors++;
