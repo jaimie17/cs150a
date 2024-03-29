@@ -53,13 +53,12 @@ public class PA5 {
       System.out.println(v4.num_errors+" type errors found");
 */
 
-/* uncomment this only for PA5 */
-      //System.out.println("\n\nCode Generation");
+      System.out.println("\n\nCode Generation");
       CodeGen_Visitor v5 = new CodeGen_Visitor();
       String result = (String) n.accept(v5,"");
       System.out.println(result);
 
-      //System.out.println("\n\nDone!");
+      System.out.println("\n\nDone!");
 
     } catch (Exception e) {
       System.out.println("Oops.");
@@ -269,6 +268,12 @@ Statement Statement() :
   |
   <IF> <LPAREN> e1=Exp()<RPAREN> s1=Statement() <ELSE> s2=Statement()
   {return(new If(e1,s1,s2));}
+
+  |
+  <WHILE> <LPAREN> e1=Exp() <RPAREN> 
+     s1=Statement() 
+      {return new While(e1,s1);
+      }
 
   |
   <PRINTLN> <LPAREN> e1=Exp() <RPAREN> <SEMICOLON> 

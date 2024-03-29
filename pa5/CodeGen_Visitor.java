@@ -1,7 +1,7 @@
 import syntaxtree.*;
 import java.util.HashMap;
 
-import org.omg.CORBA.SystemException;
+//import org.omg.CORBA.SystemException;
 
 /*
  * CodeGen_Visitor class
@@ -56,7 +56,11 @@ public class CodeGen_Visitor implements Visitor {
         Exp e2=node.e2;
         node.e1.accept(this, data);
         node.e2.accept(this, data);
-        return "# AND not implemented\n"; 
+        // pops its arguments A and B from the stack and pushes A*B onto the stack
+        
+        return "# and\n" + "popq %rax\n" 
+        + "popq %rbx\n" + "imulq %rax, %rbx\n" 
+        + "pushq %rbx\n"; 
     } 
 
     public Object visit(ArrayAssign node, Object data){ 
@@ -249,7 +253,7 @@ public class CodeGen_Visitor implements Visitor {
         // not implemented yet
         //return "# False not implemented ";
         // Push 0 onto the stack
-        return "pushq $0\n";
+        return "# false\n" + "pushq $0\n";
     } 
 
     public Object visit(Formal node, Object data){ 
@@ -704,7 +708,7 @@ public class CodeGen_Visitor implements Visitor {
 
         //return "#Not not implemented\n";
         // Pop the stack to get x and push 1-x onto the stack
-        return "popq %rax\n" +
+        return "# not\n" + "popq %rax\n" +
         "movq $1, %rbx\n" +
         "subq %rax, %rbx\n" +
         "pushq %rbx\n";
@@ -810,7 +814,7 @@ public class CodeGen_Visitor implements Visitor {
         // not in MiniC
         //return "# True not implemented\n"; 
         // Push 1 onto the stack
-        return "pushq $1\n";
+        return "# true\n" + "pushq $1\n";
     }
 
 
@@ -876,4 +880,3 @@ public class CodeGen_Visitor implements Visitor {
     }
 
 }
-
