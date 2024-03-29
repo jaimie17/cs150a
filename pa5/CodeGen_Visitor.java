@@ -247,7 +247,9 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(False node, Object data){ 
         // not implemented yet
-        return "# False not implemented ";
+        //return "# False not implemented ";
+        // Push 0 onto the stack
+        return "pushq $0\n";
     } 
 
     public Object visit(Formal node, Object data){ 
@@ -700,7 +702,12 @@ public class CodeGen_Visitor implements Visitor {
         Exp e=node.e;
         node.e.accept(this, data);
 
-        return "#Not not implemented\n"; 
+        //return "#Not not implemented\n";
+        // Pop the stack to get x and push 1-x onto the stack
+        return "popq %rax\n" +
+        "movq $1, %rbx\n" +
+        "subq %rax, %rbx\n" +
+        "pushq %rbx\n";
     }
 
 
@@ -801,7 +808,9 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(True node, Object data){ 
         // not in MiniC
-        return "# True not implemented\n"; 
+        //return "# True not implemented\n"; 
+        // Push 1 onto the stack
+        return "pushq $1\n";
     }
 
 
@@ -838,10 +847,32 @@ public class CodeGen_Visitor implements Visitor {
         // not in MiniC
         Exp e=node.e;
         Statement s=node.s;
-        node.e.accept(this, data);
-        node.s.accept(this, data);
-
-        return "# while not implemented\n"; 
+        String labelStart = "L" + labelNum++;
+        String labelEnd = "L" + labelNum++;
+        
+        // Label for the start of the loop
+        String code = labelStart + ":\n";
+        
+        // Evaluate the boolean expression E
+        code += (String)node.e.accept(this, data);
+        
+        // Pop the result of the boolean expression from the stack
+        code += "popq %rax\n";
+        
+        // Compare the result with 0 and jump to the end of the loop if it is 0
+        code += "cmpq $0, %rax\n";
+        code += "je " + labelEnd + "\n";
+        
+        // Generate code for the statement S
+        code += (String)node.s.accept(this, data);
+        
+        // Jump back to the start of the loop
+        code += "jmp " + labelStart + "\n";
+        
+        // Label for the end of the loop
+        code += labelEnd + ":\n";
+        
+        return code; 
     }
 
 }
