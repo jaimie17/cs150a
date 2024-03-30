@@ -58,9 +58,9 @@ public class CodeGen_Visitor implements Visitor {
         node.e2.accept(this, data);
         // pops its arguments A and B from the stack and pushes A*B onto the stack
         
-        return "# and\n" + "popq %rax\n" 
-        + "popq %rbx\n" + "imulq %rax, %rbx\n" 
-        + "pushq %rbx\n"; 
+        return "# and\n" + "popq %rbx\n" 
+        + "popq %rax\n" + "imulq %rbx, %rax\n" 
+        + "pushq %rax\n"; 
     } 
 
     public Object visit(ArrayAssign node, Object data){ 
@@ -708,10 +708,10 @@ public class CodeGen_Visitor implements Visitor {
 
         //return "#Not not implemented\n";
         // Pop the stack to get x and push 1-x onto the stack
-        return "# not\n" + "popq %rax\n" +
-        "movq $1, %rbx\n" +
-        "subq %rax, %rbx\n" +
-        "pushq %rbx\n";
+        return "# not\n" + "popq %rbx\n" +
+        "movq $1, %rax\n" +
+        "subq %rbx, %rax\n" +
+        "pushq %rax\n";
     }
 
 
