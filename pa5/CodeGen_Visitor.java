@@ -54,12 +54,13 @@ public class CodeGen_Visitor implements Visitor {
         // not in MiniC
         Exp e1=node.e1;
         Exp e2=node.e2;
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
+        String e1code = (String) node.e1.accept(this, data);
+        String e2code = (String) node.e2.accept(this, data);
         // pops its arguments A and B from the stack and pushes A*B onto the stack
         
-        return "# and\n" + "popq %rbx\n" 
-        + "popq %rax\n" + "imulq %rbx, %rax\n" 
+        return "# and\n" + e1code + e2code
+        + "popq %rdx\n" 
+        + "popq %rax\n" + "imulq %rdx, %rax\n" 
         + "pushq %rax\n"; 
     } 
 
@@ -704,13 +705,14 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(Not node, Object data){ 
         // not in MiniC
         Exp e=node.e;
-        node.e.accept(this, data);
+        String ecode = (String) node.e.accept(this, data);
 
         //return "#Not not implemented\n";
         // Pop the stack to get x and push 1-x onto the stack
-        return "# not\n" + "popq %rbx\n" +
+        return "# not\n" + ecode 
+        + "popq %rdx\n" +
         "movq $1, %rax\n" +
-        "subq %rbx, %rax\n" +
+        "subq %rdx, %rax\n" +
         "pushq %rax\n";
     }
 
