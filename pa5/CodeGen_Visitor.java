@@ -4,6 +4,8 @@ import java.util.HashMap;
 //import org.omg.CORBA.SystemException;
 
 /*
+ * Jaimie Louie and Samiyanur Islam
+ * PA5a
  * CodeGen_Visitor class
  * This class implements a naive code generation for the MiniJava language.
  * The parameters are all passed on the stack and all local variables are stored on the stack.
@@ -435,8 +437,8 @@ public class CodeGen_Visitor implements Visitor {
         // not in MiniC
         Identifier i=node.i;
         Statement s=node.s;
-        labelMap.put(i.s, "_main");
-        System.out.println("_main:");
+        labelMap.put(i.s, "main");
+        System.out.println("main:");
 
         node.i.accept(this, data);
         node.s.accept(this, data);
