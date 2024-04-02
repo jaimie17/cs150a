@@ -91,7 +91,6 @@ TOKEN:
 |  <EXTENDS:    "extends">
 |  <RETURN:     "return">
 |  <INT:        "int">
-|  <INTARRAY:   "int*">
 |  <BOOLEAN:    "bool">
 |  <TRUE:       "true">
 |  <FALSE:      "false">
@@ -167,20 +166,21 @@ VarDecl VarDecl() :
 }
 
 Type Type():
-{}
-{ LOOKAHEAD(2)
-  
+{
+  Identifier id;
+}
+{ 
   <BOOLEAN> 
   {return new BooleanType();}
   |
 
+  LOOKAHEAD(2)
+  <INT> "*"
+  {return new IntArrayType();}
+  |
+  
   <INT> 
   {return new IntegerType();}
-  |
-
-  <INTARRAY>
-  {return new IntArrayType();}
-  
 }
 
 
@@ -262,6 +262,7 @@ StatementList Statements() :
 Statement Statement() :
 {
   Token t;
+  Identifier i;
   StatementList s_list;
   Exp e1,e2;
   Statement s1,s2;
@@ -287,6 +288,14 @@ Statement Statement() :
   |
   LOOKAHEAD(2) t=<ID> <EQUALS> e1=Exp() <SEMICOLON> 
   {return(new Assign(new Identifier(t.image),e1));}
+
+   |
+  i=Identifier() <LBRACKET> 
+  e1=Exp() 
+  <RBRACKET> <EQUALS>
+  e2=Exp() 
+  <SEMICOLON> 
+      {return new ArrayAssign(i,e1,e2);}
 
 }
 
@@ -338,10 +347,30 @@ Exp Exp11():
 
 Exp Exp12():
 {Exp a,b; 
- ExpList c;
+ ExpList c,elist;
+ Identifier i;
  Token t;}
 { 
   a=Exp14() 
+
+  (
+      LOOKAHEAD(3)
+ 
+      <DOT> i = Identifier() 
+            <LPAREN> 
+              elist=ExpList() 
+            <RPAREN> 
+        {a = new Call(a,i,elist);}
+      |
+      <DOT> <LENGTH> 
+        {return new ArrayLength(a);}
+      |
+      <LBRACKET>     
+        b=Exp()
+      <RBRACKET> 
+        {return new ArrayLookup(a,b);}
+  ) *
+
   {return(a);}
 }
 
@@ -358,6 +387,7 @@ Exp Exp14():
 Exp Exp16() :
 {Exp a;
  Token t;
+ Identifier i;
  ExpList c;
  }
 { 
@@ -374,11 +404,25 @@ Exp Exp16() :
   t=<ID> <LPAREN> c=ExpList() <RPAREN> 
   {return new Call(null,new Identifier(t.image),c);}
   |
-  t=<ID>  {return new IdentifierExp(t.image);}
-
+  i = Identifier()  {return new IdentifierExp(i.s);}
+  |
+  <THIS> {return new This();}
+  |
+  LOOKAHEAD(3)
+  <NEW> <INT><LBRACKET> a = Exp() <RBRACKET>
+  {return new NewArray(a);}
+  |
+  <NEW> i = Identifier() <LPAREN> <RPAREN>
+  {return new NewObject(i);}
 }
 
-
+Identifier Identifier() :
+{
+  Token t;
+}
+{ 
+  t = <ID> {return new Identifier(t.image);}
+}
 
 ExpList ExpList() :
 {ExpList a;
