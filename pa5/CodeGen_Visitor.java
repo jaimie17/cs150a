@@ -71,26 +71,38 @@ public class CodeGen_Visitor implements Visitor {
         Identifier i = node.i;
         Exp e1=node.e1;
         Exp e2=node.e2;
-        node.i.accept(this,data);
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
-        return "# ArrayAssign not implemented\n";
+        String icode = (String) node.i.accept(this,data);
+        String e1code = (String) node.e1.accept(this, data);
+        String e2code = (String) node.e2.accept(this, data);
+        return "# array assign\n" + icode + e1code + e2code
+        + "popq %rdx\n"
+        + "popq %rax\n"
+        + "popq %rcx\n"
+        + "movq %rcx, -8(%rax, %rdx, $8)\n"
+        + "pushq %rcx\n";
     } 
 
     public Object visit(ArrayLength node, Object data){ 
         // not in MiniC
         Exp e=node.e;
-        node.e.accept(this, data);
-        return "#Array Length not implemented\n"; 
+        String ecode = (String) node.e.accept(this, data);
+        return "# array length\n" + ecode
+        + "popq %rax\n"
+        + "movq -8(%rax), %rax\n"
+        + "pushq %rax\n";
     } 
 
     public Object visit(ArrayLookup node, Object data){ 
         // not in MiniC
         Exp e1=node.e1;
         Exp e2=node.e2;
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
-        return "#ArrayLookup not implemented\n"; 
+        String e1code = (String) node.e1.accept(this, data);
+        String e2code = (String) node.e2.accept(this, data);
+        return "# array lookup\n" + e1code + e2code
+        + "popq %rdx\n"
+        + "popq %rax\n"
+        + "movq -8(%rax, %rdx, $8), %rax\n"
+        + "pushq %rax\n";
     } 
 
     public Object visit(Assign node, Object data){ 
@@ -689,9 +701,16 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(NewArray node, Object data){ 
         // not in MiniC
         Exp e=node.e;
-        node.e.accept(this, data);
-
-        return "# NewArray not implemented\n";
+        String ecode = (String) node.e.accept(this, data);
+        
+        return "# new array\n" + ecode
+        + "popq %rax\n"            // pop the size of the array
+        + "movq $8, %rdx\n"        // size of each array element is 8 bytes
+        + "imulq %rdx, %rax\n"     // multiply the size by 8 to get the total bytes of array
+        + "addq $8, %rax\n"        // add 8 bytes for the length of the array at the beginning
+        + "movq %rax, %rdi\n"      // move total size to rdi for malloc call
+        + "callq _malloc\n"        // allocate space for the array
+        + "pushq %rax\n";          // push total array size on stack
     }
 
 

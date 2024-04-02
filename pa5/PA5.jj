@@ -83,7 +83,7 @@ SKIP: /* Whitespace */
 TOKEN:
 {
    <PUBLIC:     "public">
-|  <PREFACE:    "#include <stdio.h>\n#include <stdbool.h>\nvoid print(int n){printf(\"%10d\\n\",n);}">
+|  <PREFACE:    "#include <stdio.h>\r\n#include <stdbool.h>\r\nvoid print(int n){printf(\"%10d\\n\",n);}">
 |  <CLASS:      "class">
 |  <STATIC:     "static">
 |  <VOID:       "void">
@@ -91,6 +91,7 @@ TOKEN:
 |  <EXTENDS:    "extends">
 |  <RETURN:     "return">
 |  <INT:        "int">
+|  <INTARRAY:   "int*">
 |  <BOOLEAN:    "bool">
 |  <TRUE:       "true">
 |  <FALSE:      "false">
@@ -175,6 +176,10 @@ Type Type():
 
   <INT> 
   {return new IntegerType();}
+  |
+
+  <INTARRAY>
+  {return new IntArrayType();}
   
 }
 
