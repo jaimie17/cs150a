@@ -71,15 +71,21 @@ public class CodeGen_Visitor implements Visitor {
         Identifier i = node.i;
         Exp e1=node.e1;
         Exp e2=node.e2;
-        String icode = (String) node.i.accept(this,data);
         String e1code = (String) node.e1.accept(this, data);
         String e2code = (String) node.e2.accept(this, data);
-        return "# array assign\n" + icode + e1code + e2code
-        + "popq %rdx\n"
-        + "popq %rax\n"
-        + "popq %rcx\n"
-        + "movq %rcx, -8(%rax, %rdx, $8)\n"
-        + "pushq %rcx\n";
+
+        String varName = currClass+"_"+currMethod+"_"+i.s;
+        String location = varMap.get(varName);
+
+        return "# array assign\n" +
+        e1code + e2code
+        + "#"+ node.accept(ppVisitor,0) + "\n"
+        + "popq %rdx\n" // pop index into %rdx
+        + "incq %rdx\n" // increment index to skip over length
+        + "popq %rcx\n" // pop value into %rcx
+        + "leaq " + location + ", %rax\n" // load the base address of the array into %rax
+        + "movq %rcx, (%rax, %rdx, 8)\n" // move value to array element
+        + "pushq %rcx\n"; // push value back onto the stack
     } 
 
     public Object visit(ArrayLength node, Object data){ 
@@ -88,7 +94,7 @@ public class CodeGen_Visitor implements Visitor {
         String ecode = (String) node.e.accept(this, data);
         return "# array length\n" + ecode
         + "popq %rax\n"
-        + "movq -8(%rax), %rax\n"
+        + "movq (%rax), %rax\n"
         + "pushq %rax\n";
     } 
 
@@ -98,10 +104,11 @@ public class CodeGen_Visitor implements Visitor {
         Exp e2=node.e2;
         String e1code = (String) node.e1.accept(this, data);
         String e2code = (String) node.e2.accept(this, data);
-        return "# array lookup\n" + e1code + e2code
-        + "popq %rdx\n"
+        return "# array lookup\n" + e2code + e1code
         + "popq %rax\n"
-        + "movq -8(%rax, %rdx, $8), %rax\n"
+        + "popq %rdx\n"
+        + "incq %rdx\n"
+        + "movq (%rax, %rdx, 8), %rax\n"
         + "pushq %rax\n";
     } 
 
@@ -704,13 +711,17 @@ public class CodeGen_Visitor implements Visitor {
         String ecode = (String) node.e.accept(this, data);
         
         return "# new array\n" + ecode
-        + "popq %rax\n"            // pop the size of the array
+        + "popq %rax\n"            // size of array
         + "movq $8, %rdx\n"        // size of each array element is 8 bytes
         + "imulq %rdx, %rax\n"     // multiply the size by 8 to get the total bytes of array
         + "addq $8, %rax\n"        // add 8 bytes for the length of the array at the beginning
         + "movq %rax, %rdi\n"      // move total size to rdi for malloc call
-        + "callq _malloc\n"        // allocate space for the array
-        + "pushq %rax\n";          // push total array size on stack
+        + "callq malloc\n"        // allocate space for the array
+        + "movq %rax, %rcx\n"      // copy address of the allocated space
+        + "subq $8, %rdi\n"          // subtract 8 from the total size to get array size
+        + "movq %rdi, (%rcx)\n"      // write the size of the array to the beginning of the allocated space
+        + "addq $8, %rax\n"        // add 8 to address to point to first element of the array
+        + "pushq %rax\n";          // push array address onto the stack
     }
 
 
