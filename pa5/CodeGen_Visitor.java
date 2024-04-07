@@ -84,8 +84,7 @@ public class CodeGen_Visitor implements Visitor {
         + "incq %rdx\n" // increment index to skip over length
         + "popq %rcx\n" // pop value into %rcx
         + "movq " +location+ ", %rax\n" // load the base address of the array into %rax
-        + "movq %rcx, (%rax, %rdx, 8)\n" // move value to array element
-        + "pushq %rcx\n"; // push value back onto the stack
+        + "movq %rcx, (%rax, %rdx, 8)\n"; // move value to array element
     } 
 
     public Object visit(ArrayLength node, Object data){ 
