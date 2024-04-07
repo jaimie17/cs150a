@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 /*
  * Jaimie Louie and Samiyanur Islam
- * PA5a
+ * PA5
  * CodeGen_Visitor class
  * This class implements a naive code generation for the MiniJava language.
  * The parameters are all passed on the stack and all local variables are stored on the stack.
