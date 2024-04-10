@@ -259,16 +259,16 @@ void Type():
     t = <INT> 
     (
         <LBRACKET> <RBRACKET> 
-        { System.out.print(t.image + "[]"); }
+        { System.out.print(t.image + "[] "); }
     |
-        { System.out.print(t.image); }
+        { System.out.print(t.image + " "); }
     )
 |
     t = <BOOLEAN> 
-    { System.out.print(t.image); }
+    { System.out.print(t.image + " "); }
 |
     t = <ID> 
-    { System.out.print(t.image); }
+    { System.out.print(t.image + " "); }
 }
 
 void MethodDecl(int indent):
@@ -323,8 +323,8 @@ void ParameterList():
 {
     Type()
     t = <ID> 
-    { System.out.print(t.image); }
-    ( <COMMA> Type() t = <ID> { System.out.print(", " + t.image); } )*
+    { System.out.print(t.image + " "); }
+    ( <COMMA> {System.out.print(", "); } Type() t = <ID> { System.out.print(t.image + " "); } )*
 }
 
 void MethodCall(int indent):
@@ -337,7 +337,7 @@ void MethodCall(int indent):
     { 
         System.out.print(t.image + "." + t2.image + "("); 
     }
-    ( Exp(indent) ( <COMMA> Exp(indent) )* )? 
+    ( Exp(indent) ( <COMMA> {System.out.print(",");} Exp(indent) )* )? 
     <RPAREN>
     { System.out.print(")"); }
 }
@@ -441,6 +441,7 @@ void Exp16(int indent):
 {
     t = <NUMBER> { System.out.print(t.image); } 
     |
+    LOOKAHEAD(3)
     t = <ID> { System.out.print(t.image); } (<DOT> <LENGTH> { System.out.print(t.image + ".length"); })?
     |
     t = <TRUE> { System.out.print(t.image); } 
@@ -448,6 +449,9 @@ void Exp16(int indent):
     t = <FALSE> { System.out.print(t.image); } 
     |
     <NOT> { System.out.print("!"); } Exp16(indent) 
+    |
+     LOOKAHEAD(3) 
+     t = <ID> <LPAREN> { System.out.print("." + t.image + "("); } ExpList(indent) <RPAREN> { System.out.print(")"); } 
     |
     <THIS> <DOT> t = <ID> { System.out.print("this." + t.image); }
     ( <LPAREN> { System.out.print("("); } Exp(indent) <RPAREN> { System.out.print(")"); } )?
